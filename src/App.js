@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import { BrowserRouter, Route } from 'react-router-dom';
 
+import { withFirebase } from './components/Firebase';
 import Login from "./components/Auth/Login";
 import Graphvis from "./components/main/Graphvis";
+import { withAuthentication } from './components/Session';
 
-export default class App extends Component {
-
+class App extends Component {
   render() {
     return (
       <BrowserRouter>
@@ -15,3 +16,4 @@ export default class App extends Component {
     )
   }
 }
+export default withAuthentication(App);
