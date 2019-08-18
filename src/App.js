@@ -1,19 +1,16 @@
 import React, { Component } from 'react'
 import { BrowserRouter, Route } from 'react-router-dom';
 
-import { withFirebase } from './components/Firebase';
-import Login from "./components/Auth/Login";
-import Graphvis from "./components/main/Graphvis";
-import { withAuthentication } from './components/Session';
+import HomePage from './components/homepage'
 
 class App extends Component {
-  render() {
+  render(){
     return (
       <BrowserRouter>
-        <Route exact path="/login" component={Login}/>
-        <Route exact path="/" component={Graphvis}/>
+        <Route exact path="/" component={HomePage}/>
       </BrowserRouter>
     )
   }
 }
-export default withAuthentication(App);
+
+export default App;
