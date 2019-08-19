@@ -18,16 +18,23 @@ const styles = {
     textAlign: 'left'
   },
   progress:{
-    width: '60%',
+    width: '40%',
     paddingTop: '1em'
   },
   iconContainer:{
-    width: '30%',
+    width: '10%',
     textAlign: 'right'
   },
   icon:{
     fontSize: 32,
     marginLeft: '5px'
+  },
+  fileStatus:{
+    width: '20%',
+    fontFamily: 'Montserrat',
+    paddingTop: '0.5em',
+    marginLeft: '0.5em',
+    fontSize: '12px'
   }
 }
 export default class Upload extends Component {
@@ -37,8 +44,9 @@ export default class Upload extends Component {
       uploading: false,
       error: false,
       errorMessage: '',
-      success: true,
-      fileReceived: false
+      success: false,
+      fileReceived: false,
+      filename: undefined
     }
 
     this.handleUpload = this.handleUpload.bind(this);
@@ -58,7 +66,7 @@ export default class Upload extends Component {
       //verify file by making API call here
       this.setState({uploading: true}, () =>{
         setTimeout(() => {
-          this.setState({uploading: false});
+          this.setState({uploading: false, success: true, filename: file.name});
           this.props.handleUpload(file, this.props.name)
         }, 1000);
       })
@@ -66,12 +74,22 @@ export default class Upload extends Component {
   }
 
   getStatusIcon(){
-    if(!this.state.fileReceived){
-      return (<PublishIcon style={styles.icon} color="primary"/>)
-    } else if (!this.state.error){
+    if (this.state.success){
       return (<CheckCircleOutlinedIcon style={styles.icon} color="primary"/>)
     } else if (this.state.error){
       return (<ErrorOutlineIcon style={styles.icon} color="error"/>)
+    } else {
+      return (<PublishIcon style={styles.icon} color="primary"/>)
+    }
+  }
+
+  getStatusText(){
+    if(!this.state.filename && !this.state.error)
+      return;
+    else if (this.state.error){
+      return this.state.errorMessage;
+    } else if (this.state.success) {
+      return this.state.filename;
     }
   }
 
@@ -98,6 +116,9 @@ export default class Upload extends Component {
         </div>
         <div style={styles.iconContainer}>
           {this.getStatusIcon()}
+        </div>
+        <div style={styles.fileStatus}>
+          {this.getStatusText()}
         </div>
       </div>
     )
