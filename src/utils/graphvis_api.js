@@ -15,7 +15,6 @@ const order = [
 function new_graph(ocd_files, con_files, metadata) {
   let formData = new FormData()
   debugger
-
   ;[con_files, ocd_files].forEach(file_obj => {
     for (let i = 0; i < order.length; ++i) {
       if (file_obj[order[i]]) {
