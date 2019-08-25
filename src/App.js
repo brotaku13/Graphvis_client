@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 import { BrowserRouter, Route } from 'react-router-dom'
 
 import HomePage from './components/homepage'
+// ^ index.js hurts IDE path intellisense
 import Graph from './components/visualization/graph'
+import Explore from './components/explore/explore'
 
 class App extends Component {
   render() {
@@ -10,6 +12,7 @@ class App extends Component {
       <BrowserRouter>
         <Route exact path="/" component={HomePage} />
         <Route path="/id/:id" component={Graph} />
+        <Route path="/explore" component={Explore} />
       </BrowserRouter>
     )
   }
