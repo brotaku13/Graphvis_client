@@ -8,17 +8,18 @@ import bg from '../../assets/images/graph_background.jpg'
 import GraphUpload from './graph_upload'
 
 const styles = {
-  fullBackground: {
+  root: {
     backgroundImage: `url(${bg})`,
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    backgroundPosition: '90%',
+    backgroundPosition: '50%',
     position: 'absolute',
     width: '100%',
     height: '100%',
-  },
-  root: {
+    overlay: 'hidden',
     overflow: 'hidden',
+  },
+  content: {
     display: 'flex',
     justifyContent: 'flex-start',
     flexDirection: 'column',
@@ -29,16 +30,12 @@ const styles = {
   },
   loginPaper: {
     zIndex: 10,
-    height: '38vh',
     width: '50vw',
     display: 'flex',
     padding: '1em',
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
-  },
-  title: {
-    zIndex: 10,
   },
   loginTitle: {
     zIndex: 10,
@@ -97,63 +94,64 @@ class HomePage extends Component {
 
   render() {
     return (
-      <div style={styles.root}>
-        <div style={styles.fullBackground} />
-        <div className="title" style={styles.title}>
-          Graphvis
+      <div className="graph-root" style={styles.root}>
+        <div style={styles.content}>
+          <div className="title" style={styles.title}>
+            Graphvis
         </div>
-        <div style={styles.container}>
-          <div>
-            <Slide
-              direction="right"
-              in={this.state.graphIDDisplay}
-              mountOnEnter
-              unmountOnExit
-            >
-              <Paper style={styles.loginPaper} elevation={4}>
-                <div className="montserrat" style={styles.loginTitle}>
-                  Enter a Graph ID
+          <div style={styles.container}>
+            <div>
+              <Slide
+                direction="right"
+                in={this.state.graphIDDisplay}
+                mountOnEnter
+                unmountOnExit
+              >
+                <Paper style={styles.loginPaper} elevation={4}>
+                  <div className="montserrat" style={styles.loginTitle}>
+                    Enter a Graph ID
                 </div>
-                <div style={styles.graphIDTextfield}>
-                  <form onSubmit={this.handleSubmit}>
-                    <TextField
-                      id="graph_id_textfield"
-                      name="graph_id"
-                      label="Graph ID"
-                      palceholder="Enter here"
-                      fullWidth
-                      margin="normal"
-                      variant="outlined"
-                      onChange={this.onChange}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </form>
-                </div>
-                <div className="montserrat" style={styles.newGraphButtonGroup}>
-                  Don't have a graph ID?
+                  <div style={styles.graphIDTextfield}>
+                    <form onSubmit={this.handleSubmit}>
+                      <TextField
+                        id="graph_id_textfield"
+                        name="graph_id"
+                        label="Graph ID"
+                        palceholder="Enter here"
+                        fullWidth
+                        margin="normal"
+                        variant="outlined"
+                        onChange={this.onChange}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </form>
+                  </div>
+                  <div className="montserrat" style={styles.newGraphButtonGroup}>
+                    Don't have a graph ID?
                   <Button color="primary" onClick={this.handleNewGraphNav}>
-                    Create a new graph
+                      Create a new graph
                   </Button>
-                </div>
-              </Paper>
-            </Slide>
-          </div>
-          <div>
-            <Slide
-              direction="left"
-              in={this.state.newGraphDisplay}
-              mountOnEnter
-              unmountOnExit
-            >
-              <Paper style={styles.loginPaper} elevation={4}>
-                <GraphUpload handleCancel={this.handleCancel} />
-              </Paper>
-            </Slide>
+                  </div>
+                </Paper>
+              </Slide>
+            </div>
+            <div>
+              <Slide
+                direction="left"
+                in={this.state.newGraphDisplay}
+                mountOnEnter
+                unmountOnExit
+              >
+                <Paper style={styles.loginPaper} elevation={4}>
+                  <GraphUpload handleCancel={this.handleCancel} />
+                </Paper>
+              </Slide>
+            </div>
           </div>
         </div>
-      </div>
+      </div >
     )
   }
 }
