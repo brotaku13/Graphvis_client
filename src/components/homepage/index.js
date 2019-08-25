@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Slide from '@material-ui/core/Slide';
+import React, { Component } from 'react'
+import Paper from '@material-ui/core/Paper'
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
+import Slide from '@material-ui/core/Slide'
 
-import bg from '../../assets/images/graph_background.jpg';
+import bg from '../../assets/images/graph_background.jpg'
 import GraphUpload from './graph_upload'
 
 const styles = {
@@ -19,7 +19,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'flex-start',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   container: {
     display: 'flex',
@@ -32,43 +32,41 @@ const styles = {
     padding: '1em',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   loginTitle: {
     marginTop: '2em',
     marginBottom: '1.5em',
-    fontSize: '2em'
+    fontSize: '2em',
   },
   graphIDTextfield: {
     width: '80%',
-    marginBottom: '2em'
+    marginBottom: '2em',
   },
-  newGraphButtonGroup: {
-
-  },
+  newGraphButtonGroup: {},
   error: {
     marginTop: '5%',
     color: '#ff1744',
-    fontSize: '.8em'
-  }
+    fontSize: '.8em',
+  },
 }
 
 class HomePage extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       graph_id: '',
       graphIDDisplay: false,
       newGraphDisplay: true,
     }
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.onChange = this.onChange.bind(this);
-    this.handleNewGraphNav = this.handleNewGraphNav.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.onChange = this.onChange.bind(this)
+    this.handleNewGraphNav = this.handleNewGraphNav.bind(this)
+    this.handleCancel = this.handleCancel.bind(this)
   }
 
   handleSubmit(event) {
-    event.preventDefault();
+    event.preventDefault()
     alert(this.state.graph_id)
   }
 
@@ -79,14 +77,14 @@ class HomePage extends Component {
   handleNewGraphNav() {
     this.setState({
       graphIDDisplay: false,
-      newGraphDisplay: true
+      newGraphDisplay: true,
     })
   }
 
-  handleCancel(){
+  handleCancel() {
     this.setState({
       graphIDDisplay: true,
-      newGraphDisplay: false
+      newGraphDisplay: false,
     })
   }
 
@@ -95,10 +93,15 @@ class HomePage extends Component {
       <div style={styles.root}>
         <div className="title" styles={styles.title}>
           Graphvis
-            </div>
+        </div>
         <div style={styles.container}>
           <div>
-            <Slide direction="right" in={this.state.graphIDDisplay} mountOnEnter unmountOnExit>
+            <Slide
+              direction="right"
+              in={this.state.graphIDDisplay}
+              mountOnEnter
+              unmountOnExit
+            >
               <Paper style={styles.loginPaper} elevation={4}>
                 <div className="montserrat" style={styles.loginTitle}>
                   Enter a Graph ID
@@ -115,33 +118,36 @@ class HomePage extends Component {
                       variant="outlined"
                       onChange={this.onChange}
                       InputLabelProps={{
-                        shrink: true
-                      }} />
+                        shrink: true,
+                      }}
+                    />
                   </form>
                 </div>
                 <div className="montserrat" style={styles.newGraphButtonGroup}>
                   Don't have a graph ID?
-                <Button color="primary" onClick={this.handleNewGraphNav}>Create a new graph</Button>
+                  <Button color="primary" onClick={this.handleNewGraphNav}>
+                    Create a new graph
+                  </Button>
                 </div>
               </Paper>
             </Slide>
           </div>
           <div>
-            <Slide direction="left" in={this.state.newGraphDisplay} mountOnEnter unmountOnExit>
+            <Slide
+              direction="left"
+              in={this.state.newGraphDisplay}
+              mountOnEnter
+              unmountOnExit
+            >
               <Paper style={styles.loginPaper} elevation={4}>
-                  <GraphUpload
-                    handleCancel={this.handleCancel}
-                  />
+                <GraphUpload handleCancel={this.handleCancel} />
               </Paper>
             </Slide>
-
           </div>
-
-
         </div>
       </div>
     )
   }
 }
 
-export default HomePage;
+export default HomePage

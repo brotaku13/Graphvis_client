@@ -1,38 +1,38 @@
 import React, { Component } from 'react'
-import TextField from '@material-ui/core/TextField';
+import TextField from '@material-ui/core/TextField'
 
 const styles = {
   root: {
     display: 'flex',
-    flexDirection: 'column'
-  }
+    flexDirection: 'column',
+  },
 }
 
 export default class Info extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      data: this.props.data
+      data: this.props.data,
     }
-    this.onChange = this.onChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.onChange = this.onChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
   onChange(event) {
     console.log(this.state.data)
 
-    let data = this.state.data;
-    data[event.target.name] = event.target.value;
-    this.setState({data: data}, () => {
-      if(this.state.data.name !== null && this.state.data.creator !== null){
-        this.props.onComplete();
+    let data = this.state.data
+    data[event.target.name] = event.target.value
+    this.setState({ data: data }, () => {
+      if (this.state.data.name !== null && this.state.data.creator !== null) {
+        this.props.onComplete()
       }
     })
   }
-  handleSubmit(event){
+  handleSubmit(event) {
     console.log('herl')
-    event.preventDefault();
+    event.preventDefault()
 
-    this.props.onComplete();
+    this.props.onComplete()
   }
   render() {
     let rootStyles = { ...styles.root }
@@ -52,8 +52,9 @@ export default class Info extends Component {
             variant="outlined"
             onChange={this.onChange}
             InputLabelProps={{
-              shrink: true
-            }} />
+              shrink: true,
+            }}
+          />
           <TextField
             id="creator_field"
             name="creator"
@@ -64,9 +65,10 @@ export default class Info extends Component {
             variant="outlined"
             onChange={this.onChange}
             InputLabelProps={{
-              shrink: true
-            }} />
-          <button style={{display: 'none'}} type='submit' />
+              shrink: true,
+            }}
+          />
+          <button style={{ display: 'none' }} type="submit" />
         </form>
       </div>
     )
