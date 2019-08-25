@@ -8,14 +8,17 @@ import bg from '../../assets/images/graph_background.jpg'
 import GraphUpload from './graph_upload'
 
 const styles = {
-  root: {
+  fullBackground: {
     backgroundImage: `url(${bg})`,
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    overflow: 'hidden',
     backgroundPosition: '90%',
-    height: '98vh',
-    width: '99vw',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  root: {
+    overflow: 'hidden',
     display: 'flex',
     justifyContent: 'flex-start',
     flexDirection: 'column',
@@ -25,7 +28,7 @@ const styles = {
     display: 'flex',
   },
   loginPaper: {
-    marginTop: '5em',
+    zIndex: 10,
     height: '38vh',
     width: '50vw',
     display: 'flex',
@@ -34,7 +37,11 @@ const styles = {
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  title: {
+    zIndex: 10,
+  },
   loginTitle: {
+    zIndex: 10,
     marginTop: '2em',
     marginBottom: '1.5em',
     fontSize: '2em',
@@ -91,7 +98,8 @@ class HomePage extends Component {
   render() {
     return (
       <div style={styles.root}>
-        <div className="title" styles={styles.title}>
+        <div style={styles.fullBackground} />
+        <div className="title" style={styles.title}>
           Graphvis
         </div>
         <div style={styles.container}>
