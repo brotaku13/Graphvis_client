@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
-import { Redirect } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Slide from '@material-ui/core/Slide';
 

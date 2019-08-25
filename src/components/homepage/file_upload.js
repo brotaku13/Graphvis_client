@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import Upload from './upload';
-import { thisExpression } from '@babel/types';
 
 const styles = {
   root:{

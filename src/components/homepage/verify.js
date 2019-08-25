@@ -51,9 +51,7 @@ const data_titles = [
 ]
 
 export default class Verify extends Component {
-  constructor(props){
-    super(props);
-  }
+
   getFileName(files, accessor){
     if(files[accessor] !== null && files[accessor].name){
       return files[accessor].name

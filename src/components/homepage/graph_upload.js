@@ -4,10 +4,12 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 
+
 import FileUpload from './file_upload';
 import Info from './info';
 import Verify from './verify';
 import Submission from './submission';
+import {new_graph} from '../../utils/graphvis_api'
 
 const styles = {
   root: {
@@ -35,9 +37,9 @@ const step = {
 
 const stepTitles = ['Control Group Data', 'OCD Group Data', 'Submit']
 
-const fileObj = () => {
+const fileObj = (name) => {
   return {
-    name: null,
+    name: name,
     edge_list: null,
     weight_matrix: null,
     coordinates: null,
@@ -58,20 +60,14 @@ const graph_set_data = () =>{
 class GraphUpload extends Component {
   constructor(props) {
     super(props);
-    var control_files = fileObj();
-    control_files.name = 'control';
 
-    var ocd_files = fileObj();
-    ocd_files.name = 'ocd'
-
-    var metadata = graph_set_data();
     
     this.state = {
       activeStep: step.INFO,
       completedSteps: new Set(),
-      control_files: control_files,
-      ocd_files: ocd_files,
-      graph_metadata: metadata ,
+      control_files: fileObj('control'),
+      ocd_files: fileObj('ocd'),
+      graph_metadata: graph_set_data(),
       submission_errors: null,
       submission_hash: null,
       submission_status: null
@@ -89,7 +85,6 @@ class GraphUpload extends Component {
   stepCompleted(index) {
     return !this.state.completedSteps.has(index);
   }
-
   handleBack() {
     let activeStep = this.state.activeStep;
     this.setState({ activeStep: activeStep - 1 })
@@ -113,7 +108,15 @@ class GraphUpload extends Component {
   }
 
   handleSubmit(){
-    
+    new_graph(this.state.ocd_files, 
+            this.state.control_files, 
+            this.state.graph_metadata)
+    .then(res => {
+      console.log(res);
+    })
+    .catch(error => {
+      console.log(error)
+    })
   }
 
   getNavButtons(index) {
@@ -190,6 +193,8 @@ class GraphUpload extends Component {
             name='control'
             show={this.state.activeStep === step.CONTROL}
           />
+                {/* TODO: Add a feature to allow a user to press a checkbox to use the same coordinates, node_ids, and node_names for both graphs
+                That would be on this FileUpload component.*/}
           <FileUpload 
             onComplete={this.handleComplete} 
             graphData={this.state.ocd_files}

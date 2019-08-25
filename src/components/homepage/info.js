@@ -19,10 +19,14 @@ export default class Info extends Component {
   }
   onChange(event) {
     console.log(this.state.data)
-    this.state.data[event.target.name] = event.target.value
-    if(this.state.data.name !== null && this.state.data.creator !== null){
-      this.props.onComplete();
-    }
+
+    let data = this.state.data;
+    data[event.target.name] = event.target.value;
+    this.setState({data: data}, () => {
+      if(this.state.data.name !== null && this.state.data.creator !== null){
+        this.props.onComplete();
+      }
+    })
   }
   handleSubmit(event){
     console.log('herl')
