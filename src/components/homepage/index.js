@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button'
 import Slide from '@material-ui/core/Slide'
 
 import bg from '../../assets/images/graph_background.jpg'
-import GraphUpload from './graph_upload'
+import UploadContainer from './UploadContainer';
 
 const styles = {
   root: {
@@ -145,7 +145,10 @@ class HomePage extends Component {
                 unmountOnExit
               >
                 <Paper style={styles.loginPaper} elevation={4}>
-                  <GraphUpload handleCancel={this.handleCancel} />
+                  {/* <GraphUpload handleCancel={this.handleCancel} /> */}
+                  <UploadContainer
+                    cancel={this.handleCancel}
+                  />
                 </Paper>
               </Slide>
             </div>
