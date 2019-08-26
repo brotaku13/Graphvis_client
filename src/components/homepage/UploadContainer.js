@@ -4,6 +4,10 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
+import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined";
+import { Typography } from "@material-ui/core";
 
 import Loader from "./Loader";
 
@@ -25,10 +29,9 @@ const MetaData = () => {
 
 const steps = [
   { id: 0, title: "Metadata" },
-  { id: 1, title: "Control Graph Files" },
-  { id: 2, title: "OCD Graph Files" },
-  { id: 3, title: "Verify" },
-  { id: 4, title: "Submit" }
+  { id: 1, title: "Control Files" },
+  { id: 2, title: "OCD Files" },
+  { id: 3, title: "Submit" }
 ];
 
 const styles = {
@@ -61,22 +64,51 @@ const styles = {
     justifyContent: "center",
     flexDirection: "column",
     alignItems: "center"
+  },
+  submitContainer: {
+    margin: "0.5em",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  loader: {
+    margin: "0.5em"
+  },
+  loadIcon: {
+    fontSize: 65,
+    margin: "0.25em"
+  },
+  uploadResponse: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: "0.5em"
+  },
+  responseDetails: {
+    marginBottom: "0.5em"
   }
 };
 
 //props is just the cancel function to go back to the main screen
 
 const UploadContainer = props => {
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(3);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [ocdData, setOcdData] = useState(GraphFiles());
   const [conData, setConData] = useState(GraphFiles());
   const [metadata, setMetadata] = useState(MetaData());
+  const [loading, setLoading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [graphId, setGraphId] = useState("k48vc93jk390s83kj30s");
+  const [uploadErrors, setUploadErrors] = useState(
+    "The following error occured and you reeeally need to fix it or something bad is going to happen"
+  );
 
   const metadataChange = name => e => {
     setMetadata({ ...metadata, [name]: e.target.value });
   };
-  
+
   const handleMetadataSubmit = e => {
     e.preventDefault();
     if (metadata.graphName !== null && metadata.author !== null) {
@@ -85,42 +117,53 @@ const UploadContainer = props => {
     }
   };
 
-  const completedStep = useCallback(() => {
-    if (!completedSteps.includes(activeStep)) {
-      setCompletedSteps([...completedSteps, activeStep]);
-    }
-    },[completedSteps, activeStep])
+  const completedStep = useCallback(
+    stepId => {
+      if (!completedSteps.includes(stepId)) {
+        setCompletedSteps([...completedSteps, stepId]);
+      }
+    },
+    [completedSteps]
+  );
 
   useEffect(() => {
     if (metadata.graphName !== null && metadata.author !== null) {
-      completedStep();
+      completedStep(steps[0].id);
     }
   }, [metadata, completedStep]);
 
   useEffect(() => {
     if (Object.values(conData).every(o => o !== null)) {
-      completedStep();
+      completedStep(steps[1].id);
     }
   }, [conData, completedStep]);
 
   useEffect(() => {
     if (Object.values(ocdData).every(o => o !== null)) {
-      completedStep();
+      completedStep(steps[2].id);
     }
   }, [ocdData, completedStep]);
 
-  const copyFile = (file) =>{
-    let newFile = new File([file], file.name, {type: file.type});
+  const copyFile = file => {
+    let newFile = new File([file], file.name, { type: file.type });
     return newFile;
-  }
+  };
 
-  const onMatch = (filename) =>{
+  const onMatch = filename => {
     //only using for OCD matching Control
     setOcdData({
       ...ocdData,
       [filename]: copyFile(conData[filename])
-    })
-  }
+    });
+  };
+
+  const submit = () => {
+    setActiveStep(activeStep + 1);
+    setLoading(true);
+    
+  };
+
+  const viewGraph = () => {};
 
   return (
     <div style={styles.root}>
@@ -223,7 +266,10 @@ const UploadContainer = props => {
             <Button color="primary" onClick={props.cancel}>
               Cancel
             </Button>
-            <Button color="primary" onClick={() => setActiveStep(activeStep - 1)}>
+            <Button
+              color="primary"
+              onClick={() => setActiveStep(activeStep - 1)}
+            >
               Back
             </Button>
             <Button
@@ -281,24 +327,84 @@ const UploadContainer = props => {
             <Button color="primary" onClick={props.cancel}>
               Cancel
             </Button>
-            <Button color="primary" onClick={() => setActiveStep(activeStep - 1)}>
+            <Button
+              color="primary"
+              onClick={() => setActiveStep(activeStep - 1)}
+            >
               Back
             </Button>
             <Button
               color="primary"
               disabled={!completedSteps.includes(activeStep)}
-              onClick={() => setActiveStep(activeStep + 1)}
+              onClick={() => submit()}
             >
-              Verify
+              Create Graph
             </Button>
           </div>
         </div>
-        <div
-          style={{ display: activeStep === steps[3].id ? "" : "none" }}
-        ></div>
-        <div
-          style={{ display: activeStep === steps[4].id ? "" : "none" }}
-        ></div>
+        <div style={{ display: activeStep === steps[3].id ? "" : "none" }}>
+          <div style={styles.submit}>
+            {loading ? (
+              <div style={styles.submitContainer}>
+                <div style={styles.loader}>
+                  <CircularProgress
+                    variant="indeterminate"
+                    size={44}
+                    thickness={2}
+                    color="primary"
+                  />
+                </div>
+                <Typography variant="h6">Creating Graph</Typography>
+              </div>
+            ) : (
+              <div>
+                {uploadSuccess ? (
+                  <div>
+                    <div style={styles.uploadResponse}>
+                      <CheckCircleOutlinedIcon
+                        style={styles.loadIcon}
+                        color="primary"
+                      />
+                      <Typography variant="subtitle2" gutterBottom>
+                        Your graph ID is
+                      </Typography>
+                      <Typography variant="h5">{graphId}</Typography>
+                    </div>
+
+                    <div style={styles.buttons}>
+                      <Button color="primary" onClick={() => viewGraph()}>
+                        View Graph
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={styles.uploadResponse}>
+                      <HighlightOffOutlinedIcon
+                        style={styles.loadIcon}
+                        color="error"
+                      />
+                      <Typography variant="subtitle2">
+                        {uploadErrors}
+                      </Typography>
+                    </div>
+                    <div style={styles.buttons}>
+                      <Button color="primary" onClick={props.cancel}>
+                        Cancel
+                      </Button>
+                      <Button
+                        color="primary"
+                        onClick={() => setActiveStep(activeStep - 1)}
+                      >
+                        Back
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
