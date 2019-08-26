@@ -10,6 +10,7 @@ import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined";
 import { Typography } from "@material-ui/core";
 
 import Loader from "./Loader";
+import {newGraph} from '../../utils/GraphvisAPI'
 
 const GraphFiles = () => {
   return {
@@ -93,17 +94,15 @@ const styles = {
 //props is just the cancel function to go back to the main screen
 
 const UploadContainer = props => {
-  const [activeStep, setActiveStep] = useState(3);
+  const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [ocdData, setOcdData] = useState(GraphFiles());
   const [conData, setConData] = useState(GraphFiles());
   const [metadata, setMetadata] = useState(MetaData());
-  const [loading, setLoading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [graphId, setGraphId] = useState("k48vc93jk390s83kj30s");
-  const [uploadErrors, setUploadErrors] = useState(
-    "The following error occured and you reeeally need to fix it or something bad is going to happen"
-  );
+  const [loading, setLoading] = useState(true);
+  const [uploadSuccess, setUploadSuccess] = useState(true);
+  const [graphId, setGraphId] = useState('');
+  const [uploadErrors, setUploadErrors] = useState('');
 
   const metadataChange = name => e => {
     setMetadata({ ...metadata, [name]: e.target.value });
@@ -160,10 +159,23 @@ const UploadContainer = props => {
   const submit = () => {
     setActiveStep(activeStep + 1);
     setLoading(true);
-    
+    newGraph(metadata, ocdData, conData)
+      .then(res => {
+        setLoading(false);
+        console.log(res);
+        if(res.status !== 200){
+          setUploadSuccess(false);
+          setUploadErrors(res.data.errors);
+        } else {
+          setUploadSuccess(true);
+          setGraphId(res.data.hash);
+        }
+      })
   };
 
-  const viewGraph = () => {};
+  const viewGraph = () => {
+
+  };
 
   return (
     <div style={styles.root}>
