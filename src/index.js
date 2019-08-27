@@ -19,6 +19,24 @@ const theme = createMuiTheme({
       main: '#7c43bd',
     },
   },
+  overrides: {
+    MuiAppBar: {
+      root: {
+        height: '2.5em'
+      }
+    },
+    MuiToolbar: {
+      dense: {
+        minHeight: '0.75em',
+        paddingBottom: '0.5em'
+      }
+    },
+    MuiInputAdornment: {
+      root: {
+        color: 'white'
+      }
+    }
+  }
 })
 
 ReactDOM.render(
