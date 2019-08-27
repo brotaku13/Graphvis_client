@@ -4,6 +4,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Slide from "@material-ui/core/Slide";
 import Typography from "@material-ui/core/Typography";
+import { withRouter } from 'react-router-dom';
 
 import bg from "../../assets/images/graph_background.jpg";
 import UploadContainer from "./UploadContainer";
@@ -71,7 +72,7 @@ const styles = {
   }
 };
 
-const Home = () => {
+const Home = (props) => {
   const [graphId, setGraphId] = useState("");
   const [showUi, setShowUi] = useState({
     about: false,
@@ -95,11 +96,18 @@ const Home = () => {
     });
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    props.history.push(`/id/${graphId}`)
+  };
 
   const onTextField = e => {
     setGraphId(e.target.value);
   };
+
+  const onExplore = () => {
+    //query server for random graph and then do the same as handleSubit
+  }
 
   return (
     <div className="graph-root" style={styles.root}>
@@ -163,4 +171,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default withRouter(Home);
