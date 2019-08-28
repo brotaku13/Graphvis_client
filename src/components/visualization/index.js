@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -16,6 +16,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import { withRouter } from "react-router-dom";
 
 import GraphContainer from './GraphContainer'
+
 
 const drawerWidth = 240;
 
@@ -62,7 +63,7 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    paddingTop: theme.spacing(3),
+    paddingTop: theme.spacing(4),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -98,9 +99,7 @@ const Visualization = props => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [graphSearchField, setGraphSearchField] = useState(graphId);
-  const [graphData, setGraphData] = useState({});
-
-
+  const [windowWidth, setWindowWidth] = useState(0);
   function handleDrawerOpen() {
     setOpen(true);
   }
@@ -117,6 +116,8 @@ const Visualization = props => {
   const handleTextSearch = e => {
     setGraphSearchField(e.target.value);
   };
+
+
 
   return (
     <div className={classes.root}>
@@ -192,7 +193,7 @@ const Visualization = props => {
       >
         <div className={classes.graphContainer}>
         <GraphContainer
-          graphId="5d637a5fa6ee4455a9003857"
+          graphId="5d66063ad6f65d7488cfb956"
         />
         </div>
       </main>

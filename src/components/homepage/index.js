@@ -105,9 +105,9 @@ const Home = props => {
     setGraphId(e.target.value);
   };
 
-  const onExplore = () => {
-    //query server for random graph and then do the same as handleSubit
-  };
+  // const onExplore = () => {
+  //   //query server for random graph and then do the same as handleSubit
+  // };
 
   return (
     <div className="graph-root" style={styles.root}>
