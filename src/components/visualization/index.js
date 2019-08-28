@@ -13,7 +13,9 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { withRouter } from 'react-router-dom';
+import { withRouter } from "react-router-dom";
+
+import GraphContainer from './GraphContainer'
 
 const drawerWidth = 240;
 
@@ -60,7 +62,7 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    paddingTop: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -85,19 +87,20 @@ const useStyles = makeStyles(theme => ({
     marginTop: "0.5em"
   },
   graphInfo: {
-    display: 'flex',
-    flexDirection: 'column',
-
+    display: "flex",
+    flexDirection: "column"
+  },
+  graphContainer:{
+    marginTop: '1em'
   }
 }));
 
-const Visualization = (props) => {
+const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [graphSearchField, setGraphSearchField] = useState(graphId)
-
+  const [graphSearchField, setGraphSearchField] = useState(graphId);
 
   function handleDrawerOpen() {
     setOpen(true);
@@ -107,14 +110,14 @@ const Visualization = (props) => {
     setOpen(false);
   }
 
-  const handleNewSearch = (e) => {
+  const handleNewSearch = e => {
     e.preventDefault();
-    props.history.push(`/id/${graphSearchField}`)
+    props.history.push(`/id/${graphSearchField}`);
   };
 
-  const handleTextSearch = (e) =>{
+  const handleTextSearch = e => {
     setGraphSearchField(e.target.value);
-  }
+  };
 
   return (
     <div className={classes.root}>
@@ -153,7 +156,7 @@ const Visualization = (props) => {
                 )
               }}
               defaultValue={graphId}
-              margin="bare"
+              margin="dense"
               onChange={handleTextSearch}
             />
           </form>
@@ -170,8 +173,8 @@ const Visualization = (props) => {
       >
         <div className={classes.drawerHeader}>
           <div className={classes.graphInfo}>
-            <Typography nowrap>Graph Name </Typography>
-            <Typography nowrap>Author Name</Typography>
+            <Typography noWrap>Graph Name </Typography>
+            <Typography noWrap>Author Name</Typography>
           </div>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (
@@ -188,36 +191,11 @@ const Visualization = (props) => {
           [classes.contentShift]: open
         })}
       >
-        <div className={classes.drawerHeader} />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-          dolor purus non enim praesent elementum facilisis leo vel. Risus at
-          ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum
-          quisque non tellus. Convallis convallis tellus id interdum velit
-          laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed
-          adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
-          integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
-          eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
-          quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
-          vivamus at augue. At augue eget arcu dictum varius duis at consectetur
-          lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien
-          faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
-          ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
-          elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse
-          sed nisi lacus sed viverra tellus. Purus sit amet volutpat consequat
-          mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis
-          risus sed vulputate odio. Morbi tincidunt ornare massa eget egestas
-          purus viverra accumsan in. In hendrerit gravida rutrum quisque non
-          tellus orci ac. Pellentesque nec nam aliquam sem et tortor. Habitant
-          morbi tristique senectus et. Adipiscing elit duis tristique
-          sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
+        <div className={classes.graphContainer}>
+        <GraphContainer
+          graphId="5d637a5fa6ee4455a9003857"
+        />
+        </div>
       </main>
     </div>
   );

@@ -2,6 +2,8 @@ import axios from 'axios'
 
 const API = 'http://localhost:5415/api/'
 const NEW_GRAPH = 'graph/new'
+const GET_GRAPH = 'graph/id/'
+
 
 export const newGraph = (metadata, ocdData, conData) =>{
   let formData = new FormData();
@@ -22,6 +24,13 @@ export const newGraph = (metadata, ocdData, conData) =>{
     headers: {
       'Content-Type': 'multipart/formdata'
     }
+  })
+}
+
+export const getGraph = (graphId) => {
+  return axios({
+    method: 'get',
+    url: API + GET_GRAPH + graphId,
   })
 }
 
