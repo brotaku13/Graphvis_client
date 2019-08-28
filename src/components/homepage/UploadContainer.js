@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
-import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined";
-import { Typography } from "@material-ui/core";
+import React, { useState, useEffect, useCallback } from 'react';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
+import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined';
+import { Typography } from '@material-ui/core';
 
-import Loader from "./Loader";
-import {newGraph} from '../../utils/GraphvisAPI'
+import Loader from './Loader';
+import { newGraph } from '../../utils/GraphvisAPI';
 
 const GraphFiles = () => {
   return {
@@ -18,77 +18,77 @@ const GraphFiles = () => {
     coordinates: null,
     nodeNames: null,
     nodeIds: null,
-    orbits: null
+    orbits: null,
   };
 };
 const MetaData = () => {
   return {
     graphName: null,
-    author: null
+    author: null,
   };
 };
 
 const steps = [
-  { id: 0, title: "Metadata" },
-  { id: 1, title: "Control Files" },
-  { id: 2, title: "OCD Files" },
-  { id: 3, title: "Submit" }
+  { id: 0, title: 'Metadata' },
+  { id: 1, title: 'Control Files' },
+  { id: 2, title: 'OCD Files' },
+  { id: 3, title: 'Submit' },
 ];
 
 const styles = {
   root: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    width: "100%"
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
   },
   stepper: {
-    width: "80%",
-    paddingTop: "0.5em"
+    width: '80%',
+    paddingTop: '0.5em',
   },
   fileupload: {
-    width: "80%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center"
+    width: '80%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttons: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center"
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   loaderContainer: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    alignItems: "center"
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   submitContainer: {
-    margin: "0.5em",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center"
+    margin: '0.5em',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loader: {
-    margin: "0.5em"
+    margin: '0.5em',
   },
   loadIcon: {
     fontSize: 65,
-    margin: "0.25em"
+    margin: '0.25em',
   },
   uploadResponse: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    marginBottom: "0.5em"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: '0.5em',
   },
   responseDetails: {
-    marginBottom: "0.5em"
-  }
+    marginBottom: '0.5em',
+  },
 };
 
 //props is just the cancel function to go back to the main screen
@@ -122,7 +122,7 @@ const UploadContainer = props => {
         setCompletedSteps([...completedSteps, stepId]);
       }
     },
-    [completedSteps]
+    [completedSteps],
   );
 
   useEffect(() => {
@@ -152,37 +152,34 @@ const UploadContainer = props => {
     //only using for OCD matching Control
     setOcdData({
       ...ocdData,
-      [filename]: copyFile(conData[filename])
+      [filename]: copyFile(conData[filename]),
     });
   };
 
   const submit = () => {
     setActiveStep(activeStep + 1);
     setLoading(true);
-    newGraph(metadata, ocdData, conData)
-      .then(res => {
-        setLoading(false);
-        console.log(res);
-        if(res.status !== 200){
-          setUploadSuccess(false);
-          setUploadErrors(res.data.errors);
-        } else {
-          setUploadSuccess(true);
-          setGraphId(res.data.hash);
-        }
-      })
+    newGraph(metadata, ocdData, conData).then(res => {
+      setLoading(false);
+      console.log(res);
+      if (res.status !== 200) {
+        setUploadSuccess(false);
+        setUploadErrors(res.data.errors);
+      } else {
+        setUploadSuccess(true);
+        setGraphId(res.data.hash);
+      }
+    });
   };
 
-  const viewGraph = () => {
-
-  };
+  const viewGraph = () => {};
 
   return (
     <div style={styles.root}>
       <Stepper activeStep={activeStep} style={styles.stepper}>
         {steps.map(step => {
           const stepProps = {
-            completed: completedSteps.includes(step.id)
+            completed: completedSteps.includes(step.id),
           };
           return (
             <Step key={step.id} {...stepProps}>
@@ -192,7 +189,7 @@ const UploadContainer = props => {
         })}
       </Stepper>
       <div style={styles.fileupload}>
-        <div style={{ display: activeStep === steps[0].id ? "" : "none" }}>
+        <div style={{ display: activeStep === steps[0].id ? '' : 'none' }}>
           <div>
             <form onSubmit={handleMetadataSubmit}>
               <TextField
@@ -203,9 +200,9 @@ const UploadContainer = props => {
                 fullWidth
                 margin="normal"
                 variant="outlined"
-                onChange={metadataChange("graphName")}
+                onChange={metadataChange('graphName')}
                 InputLabelProps={{
-                  shrink: true
+                  shrink: true,
                 }}
               />
               <TextField
@@ -216,12 +213,12 @@ const UploadContainer = props => {
                 fullWidth
                 margin="normal"
                 variant="outlined"
-                onChange={metadataChange("author")}
+                onChange={metadataChange('author')}
                 InputLabelProps={{
-                  shrink: true
+                  shrink: true,
                 }}
               />
-              <button style={{ display: "none" }} type="submit" />
+              <button style={{ display: 'none' }} type="submit" />
             </form>
           </div>
           <div style={styles.buttons}>
@@ -241,7 +238,7 @@ const UploadContainer = props => {
         <div
           style={{
             ...styles.loaderContainer,
-            display: activeStep === steps[1].id ? "flex" : "none"
+            display: activeStep === steps[1].id ? 'flex' : 'none',
           }}
         >
           <Loader
@@ -296,7 +293,7 @@ const UploadContainer = props => {
         <div
           style={{
             ...styles.loaderContainer,
-            display: activeStep === steps[2].id ? "flex" : "none"
+            display: activeStep === steps[2].id ? 'flex' : 'none',
           }}
         >
           <Loader
@@ -354,7 +351,7 @@ const UploadContainer = props => {
             </Button>
           </div>
         </div>
-        <div style={{ display: activeStep === steps[3].id ? "" : "none" }}>
+        <div style={{ display: activeStep === steps[3].id ? '' : 'none' }}>
           <div style={styles.submit}>
             {loading ? (
               <div style={styles.submitContainer}>

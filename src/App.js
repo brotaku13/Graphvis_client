@@ -1,11 +1,10 @@
-import React, { Component } from 'react'
-import { BrowserRouter, Route } from 'react-router-dom'
+import React, { Component } from 'react';
+import { BrowserRouter, Route } from 'react-router-dom';
 
-import Home from './components/homepage'
+import Home from './components/homepage';
 // ^ index.js hurts IDE path intellisense
-import Graph from './components/visualization/graph'
 import Visualization from './components/visualization';
-import Explore from './components/explore/explore'
+import Explore from './components/explore/explore';
 
 class App extends Component {
   render() {
@@ -15,8 +14,8 @@ class App extends Component {
         <Route path="/id/:id" component={Visualization} />
         <Route path="/explore" component={Explore} />
       </BrowserRouter>
-    )
+    );
   }
 }
 
-export default App
+export default App;
