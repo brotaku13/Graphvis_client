@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -17,29 +16,6 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import { withRouter } from "react-router-dom";
 
 import GraphContainer from './GraphContainer'
-=======
-import React, { useState, useEffect } from 'react';
-import { withRouter } from 'react-router-dom';
->>>>>>> 90eb40c689e27d2eec8fce6cd1d9ecfd4f78eaa8
-
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-
-import AppBar from '@material-ui/core/AppBar';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-
-import clsx from 'clsx';
-
-import { getGraph } from '../../utils/GraphvisAPI';
 
 const drawerWidth = 240;
 
@@ -86,13 +62,8 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-<<<<<<< HEAD
     paddingTop: theme.spacing(3),
     transition: theme.transitions.create("margin", {
-=======
-    padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
->>>>>>> 90eb40c689e27d2eec8fce6cd1d9ecfd4f78eaa8
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
@@ -116,18 +87,9 @@ const useStyles = makeStyles(theme => ({
     marginTop: '0.5em',
   },
   graphInfo: {
-<<<<<<< HEAD
-    display: "flex",
-    flexDirection: "column"
-  },
-  graphContainer:{
-    marginTop: '1em'
-  }
-=======
     display: 'flex',
     flexDirection: 'column',
   },
->>>>>>> 90eb40c689e27d2eec8fce6cd1d9ecfd4f78eaa8
 }));
 
 const Visualization = props => {
@@ -136,23 +98,8 @@ const Visualization = props => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [graphSearchField, setGraphSearchField] = useState(graphId);
-<<<<<<< HEAD
-=======
   const [graphData, setGraphData] = useState({});
 
-  // componentDidMount
-  useEffect(() => {
-    (async () => {
-      try {
-        const graph = await getGraph(graphId);
-        console.log(`getGraph ${graphId} ${graph}`);
-        console.log(graph);
-      } catch (exception) {
-        console.log(exception);
-      }
-    })();
-  }, []);
->>>>>>> 90eb40c689e27d2eec8fce6cd1d9ecfd4f78eaa8
 
   function handleDrawerOpen() {
     setOpen(true);

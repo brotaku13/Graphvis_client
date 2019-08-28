@@ -9,11 +9,10 @@ const styles = {
     flexDirection: "row"
   }
 };
-const buildGraphComponents = nodes => {
-  let nodesList = []
-  let edgeList = []
 
-  
+
+const buildGraphComponents = nodes => {
+
 }
 
 const GraphContainer = props => {
@@ -28,7 +27,7 @@ const GraphContainer = props => {
       if (res.status !== 200) {
         //set errors
       }
-      setGraphData(res.data);
+      // setGraphData(res.data);
       console.log(res.data);
       let ocd = buildGraphComponents(res.data.ocd.nodes);
       let con = buildGraphComponents(res.data.con.nodes);

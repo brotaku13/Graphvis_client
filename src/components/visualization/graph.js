@@ -7,7 +7,7 @@ import ForceGraph3d from 'react-force-graph-3d'
 const nodeSize = 0.15;
 const nodeResolution = 30;
 
-const Graph = () => {
+const Graph = (props) => {
 
   const getNodeLabel = node => {
     return node.id;
