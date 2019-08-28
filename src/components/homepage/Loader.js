@@ -1,29 +1,29 @@
-import React, { useState } from "react";
-import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import CheckCircleOutlineOutlinedIcon from "@material-ui/icons/CheckCircleOutlineOutlined";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import React, { useState, useEffect } from 'react';
+import AddCircleOutlineOutlinedIcon from '@material-ui/icons/AddCircleOutlineOutlined';
+import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const styles = {
   root: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-begin",
-    width: "80%"
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-begin',
+    width: '80%',
   },
   icon: {
-    fontSize: 32
+    fontSize: 32,
   },
   label: {
-    paddingTop: "0.5em"
+    paddingTop: '0.5em',
   },
   labelContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    width: "100%"
-  }
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
 };
 
 const Loader = props => {
@@ -35,7 +35,7 @@ const Loader = props => {
       let file = e.target.files[0];
       props.onLoad({
         ...props.graphData,
-        [props.name]: file
+        [props.name]: file,
       });
       setLoaded(true);
     }
@@ -56,7 +56,7 @@ const Loader = props => {
   const handleCheck = e => {
     setChecked(e.target.checked);
     setLoaded(e.target.checked);
-    props.onMatch(props.name)
+    props.onMatch(props.name);
   };
 
   return (
@@ -64,7 +64,7 @@ const Loader = props => {
       <div>
         <Button component="label" color="primary">
           {getIcon()}
-          <input type="file" style={{ display: "none" }} onChange={onLoad} />
+          <input type="file" style={{ display: 'none' }} onChange={onLoad} />
         </Button>
       </div>
       <div style={styles.labelContainer}>
