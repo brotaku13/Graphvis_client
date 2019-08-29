@@ -50,6 +50,8 @@ const buildGraphComponents = (nodes, graphData) =>{
     let forceGraphNodes = []
     let forceGraphEdges = []
 
+    let edgeTracker = {} // tracks from -> to
+
     for(let i = 0; i < nodes.length; ++i){
       let n = nodes[i];
       let newNode = Node(n.id, n.abbrevName, n.fullName, ...Object.values(n.coordinates), n.orbits);
@@ -58,11 +60,24 @@ const buildGraphComponents = (nodes, graphData) =>{
       let edges = n.edges
       for(let j = 0; j < edges.length; ++j){
         let e = edges[j];
-        let newEdge = Edge(e._id, n.id, e.to, e.weight);
-        forceGraphEdges.push(newEdge);
-        cyElements.push({data: newEdge});
+        
+        if(e.to in edgeTracker && edgeTracker[e.to].contains(n.id)){
+          //already made this edge
+          console.log(e)
+        } else {
+          let newEdge = Edge(e._id, n.id, e.to, e.weight);
+          forceGraphEdges.push(newEdge);
+          cyElements.push({data: newEdge});
+
+          if(n.id in edgeTracker){
+            edgeTracker[n.id].add(e.to)
+          } else {
+            edgeTracker[n.id] = new Set([e.to])
+          }
+        }
       }
     }
+    console.log(edgeTracker);
     graphData.cy = cytoscape({elements: cyElements});
     graphData.nodes = forceGraphNodes;
     graphData.edges = forceGraphEdges
@@ -103,7 +118,7 @@ const GraphContainer = props => {
     return (
       <div style={styles.root} >
         <Graph name="ocd" nodes={ocdGraph.nodes} edges={ocdGraph.edges} width={windowWidth}/>
-        <Graph name="ocd" nodes={conGraph.nodes} edges={conGraph.edges} width={props.windowWidth}/>
+        <Graph name="con" nodes={conGraph.nodes} edges={conGraph.edges} width={props.windowWidth}/>
       </div>
     );
   }
