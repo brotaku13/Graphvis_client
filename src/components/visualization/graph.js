@@ -39,7 +39,7 @@ const Graph = (props) => {
   return (
     <ForceGraph3d 
       graphData={{nodes: props.nodes, links: props.edges}}
-      backgroundColor='black'
+      backgroundColor='White'
       nodeVal={nodeSize}
       nodeLabel={node => getNodeLabel(node)}
       nodeColor={node => getNodeColor(node)}
@@ -48,7 +48,7 @@ const Graph = (props) => {
       onNodeClick={node => onNodeClick(node)}
       linkColor={edge => getEdgeColor(edge)}
       linkWidth={edge => getEdgeWidth(edge)}
-      width={width / 2}
+      width={width/2}
       />
   )
 }

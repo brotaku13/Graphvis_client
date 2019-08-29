@@ -14,29 +14,19 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { withRouter } from "react-router-dom";
-
+import List from '@material-ui/core/List';
 import GraphContainer from './GraphContainer'
-
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
-  },
-  appBar: {
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -61,15 +51,6 @@ const useStyles = makeStyles(theme => ({
     ...theme.mixins.toolbar,
     justifyContent: 'space-between',
   },
-  content: {
-    flexGrow: 1,
-    paddingTop: theme.spacing(4),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: -drawerWidth,
-  },
   contentShift: {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
@@ -91,6 +72,9 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
   },
+  list: {
+    width: 250,
+  },
 }));
 
 const Visualization = props => {
@@ -100,6 +84,7 @@ const Visualization = props => {
   const [open, setOpen] = useState(false);
   const [graphSearchField, setGraphSearchField] = useState(graphId);
   const [windowWidth, setWindowWidth] = useState(0);
+  const [drawerState, setDrawerState] = useState(false)
   function handleDrawerOpen() {
     setOpen(true);
   }
@@ -117,6 +102,40 @@ const Visualization = props => {
     setGraphSearchField(e.target.value);
   };
 
+  const toggleDrawer = (open) => event => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setDrawerState(open);
+  };
+
+  const sideList = side => (
+    <div
+      className={classes.list}
+      role="presentation"
+      onClick={toggleDrawer(side, false)}
+      onKeyDown={toggleDrawer(side, false)}
+    >
+      <List>
+        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
 
 
   return (
@@ -124,18 +143,16 @@ const Visualization = props => {
       <CssBaseline />
       <AppBar
         position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
+        
       >
         <Toolbar variant="dense">
           <div>
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              onClick={handleDrawerOpen}
+              onClick={toggleDrawer(true)}
               edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
+              className={classes.menuButton}
             >
               <MenuIcon />
             </IconButton>
@@ -162,29 +179,9 @@ const Visualization = props => {
           </form>
         </Toolbar>
       </AppBar>
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.drawerHeader}>
-          <div className={classes.graphInfo}>
-            <Typography noWrap>Graph Name </Typography>
-            <Typography noWrap>Author Name</Typography>
-          </div>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
-          </IconButton>
-        </div>
-        <Divider />
+      
+      <Drawer open={drawerState} onClose={toggleDrawer(false)}>
+        {sideList('left')}
       </Drawer>
       <main
         className={clsx(classes.content, {
