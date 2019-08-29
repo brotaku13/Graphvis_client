@@ -5,7 +5,7 @@ const API = 'http://localhost:5415/api/';
 const GET_GRAPH = id => `graph/id/${id}`;
 const NEW_GRAPH = 'graph/new';
 
-export const getGraph = id => {
+export const getGraph = async id => {
   let local = window.localStorage;
   let storedGraph = local.getItem(id);
   if (storedGraph !== null) {
@@ -19,13 +19,10 @@ export const getGraph = id => {
       return getAndCacheGraph(id);
     }
 
-    return new Promise((resolve, reject) => {
-      //terrible hack to keep the same interface. please don't look too hard
-      resolve({
-        status: 200,
-        data: graph,
-      });
-    });
+    return {
+      status: 200,
+      data: graph,
+    };
   } else {
     return getAndCacheGraph(id);
   }

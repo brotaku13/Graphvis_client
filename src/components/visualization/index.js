@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,7 +10,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { withRouter } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import GraphContainer from './GraphContainer';
 import ListItem from '@material-ui/core/ListItem';
@@ -63,7 +62,13 @@ const useStyles = makeStyles(theme => ({
     marginTop: '0.5em',
   },
   graphTitle: {
+    color: '#fff',
     marginTop: '0.5em',
+    textDecoration: 'none',
+    '&:active': { textDecoration: 'none' },
+    '&:hover': { textDecoration: 'none' },
+    '&:visited': { textDecoration: 'none' },
+    '&:focus': { textDecoration: 'none' },
   },
   graphInfo: {
     display: 'flex',
@@ -77,16 +82,16 @@ const useStyles = makeStyles(theme => ({
 const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
+  const [drawerState, setDrawerState] = useState(false);
   const [graphSearchField, setGraphSearchField] = useState(graphId);
   const [drawerState, setDrawerState] = useState(false);
+  const graphSearchRef = useRef();
 
   const handleNewSearch = e => {
     e.preventDefault();
-    props.history.push(`/id/${graphSearchField}`);
-  };
-
-  const handleTextSearch = e => {
-    setGraphSearchField(e.target.value);
+    if (graphSearchRef) {
+      props.history.push(`/id/${graphSearchRef.current.value}`);
+    }
   };
 
   const toggleDrawer = open => event => {
@@ -147,9 +152,11 @@ const Visualization = props => {
               <MenuIcon />
             </IconButton>
           </div>
-          <Typography variant="h6" className={classes.graphTitle} noWrap>
-            UCI Graphvis
-          </Typography>
+          <Link to="/" className={classes.graphTitle}>
+            <Typography variant="h6" noWrap>
+              UCI Graphvis
+            </Typography>
+          </Link>
           <div className={classes.grow} />
           <form onSubmit={handleNewSearch}>
             <TextField
@@ -164,8 +171,9 @@ const Visualization = props => {
               }}
               defaultValue={graphId}
               margin="dense"
-              onChange={handleTextSearch}
+              inputRef={graphSearchRef}
             />
+            <button style={{ display: 'none' }} />
           </form>
         </Toolbar>
       </AppBar>
@@ -175,7 +183,7 @@ const Visualization = props => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
-          <GraphContainer graphId="5d6615769bcb6d0e6d79db79" />
+          <GraphContainer graphId={graphId} />
         </div>
       </main>
     </div>
