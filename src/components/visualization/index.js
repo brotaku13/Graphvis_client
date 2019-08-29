@@ -84,16 +84,12 @@ const useStyles = makeStyles(theme => ({
 const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
-  const [graphSearchField, setGraphSearchField] = useState(graphId);
   const [drawerState, setDrawerState] = useState(false);
+  const [graphSearchField, setGraphSearchField] = useState(graphId);
 
   const handleNewSearch = e => {
     e.preventDefault();
     props.history.push(`/id/${graphSearchField}`);
-  };
-
-  const handleTextSearch = e => {
-    setGraphSearchField(e.target.value);
   };
 
   const toggleDrawer = open => event => {
@@ -173,8 +169,9 @@ const Visualization = props => {
               }}
               defaultValue={graphId}
               margin="dense"
-              onChange={handleTextSearch}
+              onChange={e => setGraphSearchField(e.target.value)}
             />
+            <button style={{ display: 'none' }} />
           </form>
         </Toolbar>
       </AppBar>
@@ -184,7 +181,7 @@ const Visualization = props => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
-          <GraphContainer graphId="5d6615769bcb6d0e6d79db79" /*5d6615769bcb6d0e6d79db79*/ />
+          <GraphContainer graphId={graphId} />
         </div>
       </main>
     </div>

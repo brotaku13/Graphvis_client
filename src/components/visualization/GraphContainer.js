@@ -45,7 +45,8 @@ const Edge = (id, from, to, weight) => {
   };
 };
 
-const buildGraphComponents = (nodes, graphData) => {
+const buildGraphComponents = nodes => {
+  const graphData = GraphData();
   let cyElements = [];
   let forceGraphNodes = [];
   let forceGraphEdges = [];
@@ -86,24 +87,48 @@ const buildGraphComponents = (nodes, graphData) => {
   graphData.cy = cytoscape({ elements: cyElements });
   graphData.nodes = forceGraphNodes;
   graphData.edges = forceGraphEdges;
+
+  return graphData;
 };
 
 const GraphContainer = props => {
   const [isLoading, setIsLoading] = useState(true);
-  const [ocdGraph /*setOcdGraph*/] = useState(GraphData());
-  const [conGraph /*setConGraph*/] = useState(GraphData());
+  const [conGraph, setConGraph] = useState(GraphData());
+  const [ocdGraph, setOcdGraph] = useState(GraphData());
 
   useEffect(() => {
-    getGraph(props.graphId).then(res => {
-      if (res.status !== 200) {
-        //set errors
-      }
-      // setGraphData(res.data);
-      buildGraphComponents(res.data.graphs.con.nodes, conGraph);
-      buildGraphComponents(res.data.graphs.ocd.nodes, ocdGraph);
-      setIsLoading(false);
-    });
+    getGraph(props.graphId)
+      .then(res => {
+        if (res.status !== 200) {
+          //set errors
+        }
+        setConGraph(buildGraphComponents(res.data.graphs.con.nodes));
+        setOcdGraph(buildGraphComponents(res.data.graphs.ocd.nodes));
+        setIsLoading(false);
+      })
+      .catch(exception => {
+        setConGraph(buildGraphComponents([]));
+        setOcdGraph(buildGraphComponents([]));
+        setIsLoading(false);
+      });
   }, []);
+
+  useEffect(() => {
+    getGraph(props.graphId)
+      .then(res => {
+        if (res.status !== 200) {
+          //set errors
+        }
+        setConGraph(buildGraphComponents(res.data.graphs.con.nodes));
+        setOcdGraph(buildGraphComponents(res.data.graphs.ocd.nodes));
+        setIsLoading(false);
+      })
+      .catch(exception => {
+        setConGraph(buildGraphComponents([]));
+        setOcdGraph(buildGraphComponents([]));
+        setIsLoading(false);
+      });
+  }, [props.graphId]);
 
   if (
     isLoading &&
