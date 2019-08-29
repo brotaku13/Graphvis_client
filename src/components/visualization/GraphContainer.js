@@ -88,36 +88,6 @@ const buildGraphComponents = (nodes, graphData) => {
   graphData.edges = forceGraphEdges;
 };
 
-const moveCamera = (pos, graph, lookat) => {
-  graph.cameraPosition(
-    {
-      x: pos.x,
-      y: pos.y,
-      x: pos.z,
-    },
-    lookat,
-  );
-};
-
-const linkCameras = (ocd, con) => {
-  let ocdCam = ocd.camera();
-  let conCam = ocd.camera();
-  console.log(ocdCam);
-  debugger;
-  ocdCam.matrix = conCam.matrix;
-  ocdCam.rotation = conCam.rotation;
-  ocdCam.quaternions = conCam.quaternions;
-  ocdCam.up = conCam.up;
-
-  ocd.addEventListener('change', e => {
-    moveCamera(e.target.object.position, ocd, con.cameraPosition().lookat);
-  });
-
-  con.addEventListener('change', e => {
-    moveCamera(e.target.object.position, con, ocd.cameraPosition().lookat);
-  });
-};
-
 const GraphContainer = props => {
   const [isLoading, setIsLoading] = useState(true);
   const [ocdGraph, setOcdGraph] = useState(GraphData());
