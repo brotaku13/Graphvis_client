@@ -8,14 +8,6 @@ import useWindowDimensions from './useWindowDimensions';
 const nodeSize = 0.15;
 const nodeResolution = 30;
 
-function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
-  return {
-    width,
-    height
-  };
-}
-
 const Graph = (props) => {
   console.log(props);
   const {height, width} = useWindowDimensions();

@@ -77,7 +77,6 @@ const buildGraphComponents = (nodes, graphData) =>{
         }
       }
     }
-    console.log(edgeTracker);
     graphData.cy = cytoscape({elements: cyElements});
     graphData.nodes = forceGraphNodes;
     graphData.edges = forceGraphEdges
@@ -88,7 +87,6 @@ const GraphContainer = props => {
   const [isLoading, setIsLoading] = useState(true);
   const [ocdGraph, setOcdGraph] = useState(GraphData())
   const [conGraph, setConGraph] = useState(GraphData())
-  const [windowWidth, setWindowWidth] = useState(0)
 
   useEffect(() => {
     getGraph(props.graphId).then(res => {
@@ -96,29 +94,20 @@ const GraphContainer = props => {
         //set errors
       }
       // setGraphData(res.data);
-      console.log(res.data);
       buildGraphComponents(res.data.graphs.con.nodes, conGraph);
       buildGraphComponents(res.data.graphs.ocd.nodes, ocdGraph);
-      console.log('oops I did it again')
       setIsLoading(false);
     });
   }, []);
 
-  const refCallbak = e => {
-    if(e){
-      let n = e.getBoundingClientRect()
-      console.log(n)
-      setWindowWidth(n.width)
-    }
-  }
 
   if (isLoading && ocdGraph.edges === undefined && ocdGraph.nodes === undefined) {
     return <div>Loading...</div>;
   } else {
     return (
       <div style={styles.root} >
-        <Graph name="ocd" nodes={ocdGraph.nodes} edges={ocdGraph.edges} width={windowWidth}/>
-        <Graph name="con" nodes={conGraph.nodes} edges={conGraph.edges} width={props.windowWidth}/>
+        <Graph name="ocd" nodes={ocdGraph.nodes} edges={ocdGraph.edges}/>
+        <Graph name="con" nodes={conGraph.nodes} edges={conGraph.edges}/>
       </div>
     );
   }

@@ -1,6 +1,5 @@
-import React, { useState, useRef } from "react";
-import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -9,8 +8,6 @@ import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { withRouter } from "react-router-dom";
@@ -80,18 +77,8 @@ const useStyles = makeStyles(theme => ({
 const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
-  const theme = useTheme();
-  const [open, setOpen] = useState(false);
   const [graphSearchField, setGraphSearchField] = useState(graphId);
-  const [windowWidth, setWindowWidth] = useState(0);
   const [drawerState, setDrawerState] = useState(false)
-  function handleDrawerOpen() {
-    setOpen(true);
-  }
-
-  function handleDrawerClose() {
-    setOpen(false);
-  }
 
   const handleNewSearch = e => {
     e.preventDefault();
@@ -184,9 +171,7 @@ const Visualization = props => {
         {sideList('left')}
       </Drawer>
       <main
-        className={clsx(classes.content, {
-          [classes.contentShift]: open,
-        })}
+        className={classes.content}
       >
         <div className={classes.graphContainer}>
         <GraphContainer
