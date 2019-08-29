@@ -10,7 +10,7 @@ const nodeResolution = 30;
 
 const Graph = props => {
   console.log(props);
-  const { height, width } = useWindowDimensions();
+  const { width } = useWindowDimensions();
 
   const getNodeLabel = node => {
     return node.id;

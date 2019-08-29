@@ -90,8 +90,8 @@ const buildGraphComponents = (nodes, graphData) => {
 
 const GraphContainer = props => {
   const [isLoading, setIsLoading] = useState(true);
-  const [ocdGraph, setOcdGraph] = useState(GraphData());
-  const [conGraph, setConGraph] = useState(GraphData());
+  const [ocdGraph /*setOcdGraph*/] = useState(GraphData());
+  const [conGraph /*setConGraph*/] = useState(GraphData());
 
   useEffect(() => {
     getGraph(props.graphId).then(res => {

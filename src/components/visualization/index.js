@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { withRouter, Link } from 'react-router-dom';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,7 +12,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { withRouter } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import GraphContainer from './GraphContainer';
 import ListItem from '@material-ui/core/ListItem';
@@ -63,7 +64,13 @@ const useStyles = makeStyles(theme => ({
     marginTop: '0.5em',
   },
   graphTitle: {
+    color: '#fff',
     marginTop: '0.5em',
+    textDecoration: 'none',
+    '&:active': { textDecoration: 'none' },
+    '&:hover': { textDecoration: 'none' },
+    '&:visited': { textDecoration: 'none' },
+    '&:focus': { textDecoration: 'none' },
   },
   graphInfo: {
     display: 'flex',
@@ -147,9 +154,11 @@ const Visualization = props => {
               <MenuIcon />
             </IconButton>
           </div>
-          <Typography variant="h6" className={classes.graphTitle} noWrap>
-            UCI Graphvis
-          </Typography>
+          <Link to="/" className={classes.graphTitle}>
+            <Typography variant="h6" noWrap>
+              UCI Graphvis
+            </Typography>
+          </Link>
           <div className={classes.grow} />
           <form onSubmit={handleNewSearch}>
             <TextField
@@ -175,7 +184,7 @@ const Visualization = props => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
-          <GraphContainer graphId="5d6615769bcb6d0e6d79db79" />
+          <GraphContainer graphId="5d6615769bcb6d0e6d79db79" /*5d6615769bcb6d0e6d79db79*/ />
         </div>
       </main>
     </div>
