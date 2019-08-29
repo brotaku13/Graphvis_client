@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import ForceGraph3d from 'react-force-graph-3d';
 
 import useWindowDimensions from './useWindowDimensions';

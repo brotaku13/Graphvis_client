@@ -83,7 +83,6 @@ const useStyles = makeStyles(theme => ({
 const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
-  const [graphSearchField, setGraphSearchField] = useState(graphId);
   const [drawerState, setDrawerState] = useState(false);
   const graphSearchRef = useRef();
 
