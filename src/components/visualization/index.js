@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -86,10 +86,13 @@ const Visualization = props => {
   const classes = useStyles();
   const [drawerState, setDrawerState] = useState(false);
   const [graphSearchField, setGraphSearchField] = useState(graphId);
+  const graphSearchRef = useRef();
 
   const handleNewSearch = e => {
     e.preventDefault();
-    props.history.push(`/id/${graphSearchField}`);
+    if (graphSearchRef) {
+      props.history.push(`/id/${graphSearchRef.current.value}`);
+    }
   };
 
   const toggleDrawer = open => event => {
@@ -169,7 +172,7 @@ const Visualization = props => {
               }}
               defaultValue={graphId}
               margin="dense"
-              onChange={e => setGraphSearchField(e.target.value)}
+              inputRef={graphSearchRef}
             />
             <button style={{ display: 'none' }} />
           </form>
