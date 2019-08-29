@@ -1,48 +1,45 @@
 import axios from 'axios';
 
-const API = 'http://localhost:5415/api/'
+const API = 'http://localhost:5415/api/';
 
 const GET_GRAPH = id => `graph/id/${id}`;
 const NEW_GRAPH = 'graph/new';
 
-export const getGraph = id =>{
+export const getGraph = async id => {
   let local = window.localStorage;
   let storedGraph = local.getItem(id);
-  if(storedGraph !== null) {
+  if (storedGraph !== null) {
     console.log('retrieving graph from localstorage');
-    let graph = null
-    try{
+    let graph = null;
+    try {
       //try to parse the localstorage item
       graph = JSON.parse(storedGraph);
     } catch {
       //if we can't parse localstorage item, try to retrieve a new one from localstorage
       return getAndCacheGraph(id);
     }
-    
-    return new Promise((resolve, reject) => {
-      //terrible hack to keep the same interface. please don't look too hard
-      resolve({
-        status: 200, 
-        data: graph
-      })
-    })
+
+    return {
+      status: 200,
+      data: graph,
+    };
   } else {
     return getAndCacheGraph(id);
   }
-}
+};
 
 const getAndCacheGraph = id => {
   return axios({
-    method: 'get', 
-    url: API + GET_GRAPH(id)
+    method: 'get',
+    url: API + GET_GRAPH(id),
   }).then(res => {
-    if(res.status === 200) {
-      console.log('Caching Graph in localstorage')
+    if (res.status === 200) {
+      console.log('Caching Graph in localstorage');
       localStorage.setItem(id, JSON.stringify(res.data));
     }
     return res;
-  })
-}
+  });
+};
 
 export const newGraph = (metadata, ocdData, conData) => {
   let formData = new FormData();
@@ -66,4 +63,4 @@ export const newGraph = (metadata, ocdData, conData) => {
   });
 };
 
-export default {}
+export default {};

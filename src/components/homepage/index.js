@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Slide from "@material-ui/core/Slide";
-import Typography from "@material-ui/core/Typography";
+import React, { useState } from 'react';
+import Paper from '@material-ui/core/Paper';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Slide from '@material-ui/core/Slide';
+import Typography from '@material-ui/core/Typography';
 import { withRouter } from 'react-router-dom';
 
 import bg from '../../assets/images/graph_background.jpg';

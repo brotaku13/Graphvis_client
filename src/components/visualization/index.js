@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import { withRouter } from "react-router-dom";
+import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { withRouter } from 'react-router-dom';
 import List from '@material-ui/core/List';
-import GraphContainer from './GraphContainer'
+import GraphContainer from './GraphContainer';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -78,7 +78,7 @@ const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
   const [graphSearchField, setGraphSearchField] = useState(graphId);
-  const [drawerState, setDrawerState] = useState(false)
+  const [drawerState, setDrawerState] = useState(false);
 
   const handleNewSearch = e => {
     e.preventDefault();
@@ -89,8 +89,11 @@ const Visualization = props => {
     setGraphSearchField(e.target.value);
   };
 
-  const toggleDrawer = (open) => event => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+  const toggleDrawer = open => event => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
       return;
     }
 
@@ -107,7 +110,9 @@ const Visualization = props => {
       <List>
         {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+            <ListItemIcon>
+              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+            </ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
@@ -116,7 +121,9 @@ const Visualization = props => {
       <List>
         {['All mail', 'Trash', 'Spam'].map((text, index) => (
           <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+            <ListItemIcon>
+              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+            </ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}
@@ -124,14 +131,10 @@ const Visualization = props => {
     </div>
   );
 
-
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        
-      >
+      <AppBar position="fixed">
         <Toolbar variant="dense">
           <div>
             <IconButton
@@ -166,17 +169,13 @@ const Visualization = props => {
           </form>
         </Toolbar>
       </AppBar>
-      
+
       <Drawer open={drawerState} onClose={toggleDrawer(false)}>
         {sideList('left')}
       </Drawer>
-      <main
-        className={classes.content}
-      >
+      <main className={classes.content}>
         <div className={classes.graphContainer}>
-        <GraphContainer
-          graphId="5d6615769bcb6d0e6d79db79"
-        />
+          <GraphContainer graphId="5d6615769bcb6d0e6d79db79" />
         </div>
       </main>
     </div>
