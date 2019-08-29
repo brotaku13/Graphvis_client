@@ -91,6 +91,17 @@ const buildGraphComponents = nodes => {
   return graphData;
 };
 
+function moveCamera(position, graph, lookat) {
+  graph.cameraPosition(
+    {
+      x: position.x,
+      y: position.y,
+      z: position.z,
+    },
+    lookat,
+  );
+}
+
 const GraphContainer = props => {
   const [isLoading, setIsLoading] = useState(true);
   const [ocdGraph, setOcdGraph] = useState(GraphData());
@@ -128,6 +139,23 @@ const GraphContainer = props => {
       });
     }
   };
+
+  useEffect(() => {
+    getGraph(props.graphId)
+      .then(res => {
+        if (res.status !== 200) {
+          //set errors
+        }
+        setConGraph(buildGraphComponents(res.data.graphs.con.nodes));
+        setOcdGraph(buildGraphComponents(res.data.graphs.ocd.nodes));
+        setIsLoading(false);
+      })
+      .catch(exception => {
+        setConGraph(buildGraphComponents([]));
+        setOcdGraph(buildGraphComponents([]));
+        setIsLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     getGraph(props.graphId)

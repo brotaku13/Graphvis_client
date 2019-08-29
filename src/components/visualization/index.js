@@ -17,6 +17,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import { Link, withRouter } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -82,7 +83,6 @@ const useStyles = makeStyles(theme => ({
 const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
-  const [drawerState, setDrawerState] = useState(false);
   const [graphSearchField, setGraphSearchField] = useState(graphId);
   const [drawerState, setDrawerState] = useState(false);
   const graphSearchRef = useRef();
