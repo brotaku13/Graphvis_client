@@ -92,7 +92,7 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: '5em',
     width: '100%',
-    zIndex: 9999,
+    zIndex: 500,
     left: '50%',
     transform: 'translateX(-45%)',
   },
@@ -100,10 +100,10 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: '7em',
     width: '100%',
-    zIndex: 9999,
+    zIndex: 500,
     left: '50%',
     transform: 'translateX(-45%)',
-  }
+  },
 }));
 
 const colorScale = (min = 0, max = 101) =>
@@ -113,7 +113,13 @@ const colorScale = (min = 0, max = 101) =>
     .colors(max - min)
     .map(hex => chroma(hex).css());
 
-const ColorScale = ({ values, className, labelClassName, min = 0, max = 100 }) => {
+const ColorScale = ({
+  values,
+  className,
+  labelClassName,
+  min = 0,
+  max = 100,
+}) => {
   const { width } = useWindowDimensions();
   const currentWidth = width - width / 10;
   const colorDivs = values.map(v => (
@@ -135,26 +141,39 @@ const ColorScale = ({ values, className, labelClassName, min = 0, max = 100 }) =
     let text = null;
     console.log(i / realMax);
     const currentPercentage = Math.round((i / realMax) * 100) / 100;
-    if (i === min || currentPercentage === .25 || currentPercentage === .50 || currentPercentage === .75 || i === max) {
+    if (
+      i === min ||
+      currentPercentage === 0.25 ||
+      currentPercentage === 0.5 ||
+      currentPercentage === 0.75 ||
+      i === max
+    ) {
       if (!(currentPercentage === lastPercentage)) {
         text = i.toString();
         lastPercentage = currentPercentage;
       }
     }
-    labelDivs.push(<div style={{
-        display: 'inline-block',
-        margin: 0,
-        padding: 0,
-        width: currentWidth / values.length + 'px',
-        height: '10px',
-      }}
-    >{text}</div>);
+    labelDivs.push(
+      <div
+        style={{
+          display: 'inline-block',
+          margin: 0,
+          padding: 0,
+          width: currentWidth / values.length + 'px',
+          height: '10px',
+        }}
+      >
+        {text}
+      </div>,
+    );
   }
 
-  return <>
-  <div className={className}>{colorDivs}</div>
-  <div className={labelClassName}>{labelDivs}</div>
-  </>;
+  return (
+    <>
+      <div className={className}>{colorDivs}</div>
+      <div className={labelClassName}>{labelDivs}</div>
+    </>
+  );
 };
 
 const Visualization = props => {
@@ -163,14 +182,16 @@ const Visualization = props => {
   const [drawerState, setDrawerState] = useState(false);
   const [colorByState, setColorByState] = useState('none');
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
-  const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([0, 100]);
-  const graphSearchRef = useRef();
-
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
   const currentColoringMin = 20;
   const currentColoringMax = 1000;
   const currentColorScale = colorScale(currentColoringMin, currentColoringMax);
+  const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([
+    currentColoringMin,
+    currentColoringMax,
+  ]);
+  const graphSearchRef = useRef();
 
   const handleNewSearch = e => {
     e.preventDefault();
@@ -220,9 +241,21 @@ const Visualization = props => {
               Edge Weight
             </Typography>
             <Slider
+              marks={[
+                {
+                  value: currentColoringMin,
+                  label: currentColoringMin,
+                },
+                {
+                  value: currentColoringMax,
+                  label: currentColoringMax,
+                },
+              ]}
               aria-labelledby="edge-weight-range"
               value={edgeWeightRangeState}
               onChange={handleEdgeWeightChange}
+              min={currentColoringMin}
+              max={currentColoringMax}
             />
           </FormControl>
         </ListItem>

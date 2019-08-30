@@ -1,7 +1,7 @@
 export const adjustBrightness = (col, amt) => {
   var usePound = false;
 
-  if (col[0] == '#') {
+  if (col[0] === '#') {
     col = col.slice(1);
     usePound = true;
   }
@@ -25,9 +25,9 @@ export const adjustBrightness = (col, amt) => {
   if (B > 255) B = 255;
   else if (B < 0) B = 0;
 
-  var RR = R.toString(16).length == 1 ? '0' + R.toString(16) : R.toString(16);
-  var GG = G.toString(16).length == 1 ? '0' + G.toString(16) : G.toString(16);
-  var BB = B.toString(16).length == 1 ? '0' + B.toString(16) : B.toString(16);
+  var RR = R.toString(16).length === 1 ? '0' + R.toString(16) : R.toString(16);
+  var GG = G.toString(16).length === 1 ? '0' + G.toString(16) : G.toString(16);
+  var BB = B.toString(16).length === 1 ? '0' + B.toString(16) : B.toString(16);
 
   return (usePound ? '#' : '') + RR + GG + BB;
 };
