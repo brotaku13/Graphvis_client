@@ -17,7 +17,17 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 import { Link, withRouter } from 'react-router-dom';
+import { FormControl } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Slider from '@material-ui/core/Slider';
+
+import chroma from 'chroma-js';
+
+import useWindowDimensions from './useWindowDimensions';
 
 const drawerWidth = 240;
 
@@ -78,20 +88,111 @@ const useStyles = makeStyles(theme => ({
   list: {
     width: 250,
   },
+  colorScale: {
+    position: 'absolute',
+    top: '5em',
+    width: '100%',
+    zIndex: 9999,
+    left: '50%',
+    transform: 'translateX(-45%)',
+  },
+  labelsForColorScale: {
+    position: 'absolute',
+    top: '7em',
+    width: '100%',
+    zIndex: 9999,
+    left: '50%',
+    transform: 'translateX(-45%)',
+  }
 }));
+
+const colorScale = (min = 0, max = 101) =>
+  chroma
+    .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
+    .mode('lch')
+    .colors(max - min)
+    .map(hex => chroma(hex).css());
+
+const ColorScale = ({ values, className, labelClassName, min = 0, max = 100 }) => {
+  const { width } = useWindowDimensions();
+  const currentWidth = width - width / 10;
+  const colorDivs = values.map(v => (
+    <div
+      style={{
+        display: 'inline-block',
+        backgroundColor: v,
+        margin: 0,
+        padding: 0,
+        width: currentWidth / values.length + 'px',
+        height: '10px',
+      }}
+    />
+  ));
+  const labelDivs = [];
+  const realMax = max + 1;
+  let lastPercentage = -1;
+  for (let i = min; i < realMax; ++i) {
+    let text = null;
+    console.log(i / realMax);
+    const currentPercentage = Math.round((i / realMax) * 100) / 100;
+    if (i === min || currentPercentage === .25 || currentPercentage === .50 || currentPercentage === .75 || i === max) {
+      if (!(currentPercentage === lastPercentage)) {
+        text = i.toString();
+        lastPercentage = currentPercentage;
+      }
+    }
+    labelDivs.push(<div style={{
+        display: 'inline-block',
+        margin: 0,
+        padding: 0,
+        width: currentWidth / values.length + 'px',
+        height: '10px',
+      }}
+    >{text}</div>);
+  }
+
+  return <>
+  <div className={className}>{colorDivs}</div>
+  <div className={labelClassName}>{labelDivs}</div>
+  </>;
+};
 
 const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
-  const [graphSearchField, setGraphSearchField] = useState(graphId);
   const [drawerState, setDrawerState] = useState(false);
+  const [colorByState, setColorByState] = useState('none');
+  const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
+  const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([0, 100]);
   const graphSearchRef = useRef();
+
+  // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
+  // evaluate the min and max dynamically.
+  const currentColoringMin = 20;
+  const currentColoringMax = 1000;
+  const currentColorScale = colorScale(currentColoringMin, currentColoringMax);
 
   const handleNewSearch = e => {
     e.preventDefault();
     if (graphSearchRef) {
       props.history.push(`/id/${graphSearchRef.current.value}`);
     }
+  };
+
+  const handleChangeColorBy = e => {
+    setColorByState(e.target.value);
+  };
+
+  const handleOrbitFrequencyChange = e => {
+    setOrbitFrequencyState(parseInt(e.target.value));
+  };
+
+  const handleEdgeWeightChange = (e, newValue) => {
+    setEdgeWeightRangeState(newValue);
+  };
+
+  const recolorNodesByOrbitFrequency = () => {
+    alert('recolor the nodes!');
   };
 
   const toggleDrawer = open => event => {
@@ -113,14 +214,58 @@ const Visualization = props => {
       onKeyDown={toggleDrawer(side, false)}
     >
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        <ListItem>
+          <FormControl fullWidth>
+            <Typography id="edge-weight-range" gutterBottom>
+              Edge Weight
+            </Typography>
+            <Slider
+              aria-labelledby="edge-weight-range"
+              value={edgeWeightRangeState}
+              onChange={handleEdgeWeightChange}
+            />
+          </FormControl>
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="color-by">Color Nodes By</InputLabel>
+            <Select
+              value={colorByState}
+              onChange={handleChangeColorBy}
+              inputProps={{
+                name: 'color-by',
+                id: 'color-by',
+              }}
+            >
+              <MenuItem value={'none'}>No Color</MenuItem>
+              <MenuItem value={'degree'}>Degree</MenuItem>
+              <MenuItem value={'orbit_frequency'}>Orbit Frequency</MenuItem>
+              <MenuItem value={'strength'}>Strength</MenuItem>
+              <MenuItem value={'degree_centrality'}>Degree Centrality</MenuItem>
+              <MenuItem value={'between_centrality'}>
+                Between Centrality
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </ListItem>
+        <ListItem>
+          {colorByState && colorByState === 'orbit_frequency' && (
+            <form onSubmit={recolorNodesByOrbitFrequency}>
+              <FormControl fullWidth>
+                <TextField
+                  value={orbitFrequencyState}
+                  onChange={handleOrbitFrequencyChange}
+                />
+                <Button color="primary" onClick={recolorNodesByOrbitFrequency}>
+                  Go
+                </Button>
+              </FormControl>
+            </form>
+          )}
+        </ListItem>
       </List>
       <Divider />
       <List>
@@ -183,6 +328,13 @@ const Visualization = props => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
+          <ColorScale
+            className={classes.colorScale}
+            values={currentColorScale}
+            labelClassName={classes.labelsForColorScale}
+            min={currentColoringMin}
+            max={currentColoringMax}
+          />
           <GraphContainer graphId={graphId} />
         </div>
       </main>
