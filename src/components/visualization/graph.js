@@ -17,11 +17,11 @@ const Graph = props => {
     return node.id;
   };
   const getNodeColor = node => {
-    return 'blue';
+    return props.nodeColors[node.id];
   };
   const onNodeClick = node => {};
   const getEdgeColor = edge => {
-    return 'black';
+    return props.edgeColors[edge.colorIndex];
   };
   const getEdgeWidth = edge => {
     return 0;
@@ -44,10 +44,11 @@ const Graph = props => {
       nodeColor={node => getNodeColor(node)}
       nodeResolution={nodeResolution}
       enableNodeDrag={false}
-      onNodeClick={node => onNodeClick(node)}
+      onNodeClick={node => props.onNodeClick(node)}
       linkColor={edge => getEdgeColor(edge)}
       linkWidth={edge => getEdgeWidth(edge)}
       width={width / 2}
+      nodeOpacity={1}
     />
   );
 };
