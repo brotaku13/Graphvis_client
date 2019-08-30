@@ -135,7 +135,7 @@ const ColorScale = ({ values, className, labelClassName, min = 0, max = 100 }) =
     let text = null;
     console.log(i / realMax);
     const currentPercentage = Math.round((i / realMax) * 100) / 100;
-    if (i === 0 || currentPercentage === .25 || currentPercentage === .50 || currentPercentage === .75 || i === max) {
+    if (i === min || currentPercentage === .25 || currentPercentage === .50 || currentPercentage === .75 || i === max) {
       if (!(currentPercentage === lastPercentage)) {
         text = i.toString();
         lastPercentage = currentPercentage;
@@ -165,7 +165,12 @@ const Visualization = props => {
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
   const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([0, 100]);
   const graphSearchRef = useRef();
-  const currentColorScale = colorScale();
+
+  // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
+  // evaluate the min and max dynamically.
+  const currentColoringMin = 20;
+  const currentColoringMax = 1000;
+  const currentColorScale = colorScale(currentColoringMin, currentColoringMax);
 
   const handleNewSearch = e => {
     e.preventDefault();
@@ -327,6 +332,8 @@ const Visualization = props => {
             className={classes.colorScale}
             values={currentColorScale}
             labelClassName={classes.labelsForColorScale}
+            min={currentColoringMin}
+            max={currentColoringMax}
           />
           <GraphContainer graphId={graphId} />
         </div>
