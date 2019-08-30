@@ -17,7 +17,13 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 import { Link, withRouter } from 'react-router-dom';
+import { FormControl } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Slider from '@material-ui/core/Slider';
 
 const drawerWidth = 240;
 
@@ -84,6 +90,9 @@ const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
   const [drawerState, setDrawerState] = useState(false);
+  const [colorByState, setColorByState] = useState('none');
+  const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
+  const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([0, 100]);
   const graphSearchRef = useRef();
 
   const handleNewSearch = e => {
@@ -91,6 +100,22 @@ const Visualization = props => {
     if (graphSearchRef) {
       props.history.push(`/id/${graphSearchRef.current.value}`);
     }
+  };
+
+  const handleChangeColorBy = e => {
+    setColorByState(e.target.value);
+  };
+
+  const handleOrbitFrequencyChange = e => {
+    setOrbitFrequencyState(parseInt(e.target.value));
+  };
+
+  const handleEdgeWeightChange = (e, newValue) => {
+    setEdgeWeightRangeState(newValue);
+  };
+
+  const recolorNodesByOrbitFrequency = () => {
+    alert('recolor the nodes!');
   };
 
   const toggleDrawer = open => event => {
@@ -112,14 +137,58 @@ const Visualization = props => {
       onKeyDown={toggleDrawer(side, false)}
     >
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        <ListItem>
+          <FormControl fullWidth>
+            <Typography id="edge-weight-range" gutterBottom>
+              Edge Weight
+            </Typography>
+            <Slider
+              aria-labelledby="edge-weight-range"
+              value={edgeWeightRangeState}
+              onChange={handleEdgeWeightChange}
+            />
+          </FormControl>
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="color-by">Color Nodes By</InputLabel>
+            <Select
+              value={colorByState}
+              onChange={handleChangeColorBy}
+              inputProps={{
+                name: 'color-by',
+                id: 'color-by',
+              }}
+            >
+              <MenuItem value={'none'}>No Color</MenuItem>
+              <MenuItem value={'degree'}>Degree</MenuItem>
+              <MenuItem value={'orbit_frequency'}>Orbit Frequency</MenuItem>
+              <MenuItem value={'strength'}>Strength</MenuItem>
+              <MenuItem value={'degree_centrality'}>Degree Centrality</MenuItem>
+              <MenuItem value={'between_centrality'}>
+                Between Centrality
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </ListItem>
+        <ListItem>
+          {colorByState && colorByState === 'orbit_frequency' && (
+            <form onSubmit={recolorNodesByOrbitFrequency}>
+              <FormControl fullWidth>
+                <TextField
+                  value={orbitFrequencyState}
+                  onChange={handleOrbitFrequencyChange}
+                />
+                <Button color="primary" onClick={recolorNodesByOrbitFrequency}>
+                  Go
+                </Button>
+              </FormControl>
+            </form>
+          )}
+        </ListItem>
       </List>
       <Divider />
       <List>

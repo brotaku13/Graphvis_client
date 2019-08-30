@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = 'http://b0396085.ngrok.io/api/';
+const API = 'http://5e441a4c.ngrok.io/api/';
 
 const GET_GRAPH = id => `graph/id/${id}`;
 const NEW_GRAPH = 'graph/new';
