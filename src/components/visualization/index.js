@@ -25,6 +25,10 @@ import { FormControl } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/core/Slider';
 
+import chroma from 'chroma-js';
+
+import useWindowDimensions from './useWindowDimensions';
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -84,7 +88,41 @@ const useStyles = makeStyles(theme => ({
   list: {
     width: 250,
   },
+  colorScale: {
+    position: 'absolute',
+    top: '5em',
+    width: '100%',
+    zIndex: 9999,
+    left: '50%',
+    transform: 'translateX(-45%)',
+  },
 }));
+
+const colorScale = (max = 100) =>
+  chroma
+    .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
+    .mode('lch')
+    .colors(max)
+    .map(hex => chroma(hex).css());
+
+const ColorScale = ({ values, className }) => {
+  const { width } = useWindowDimensions();
+  const currentWidth = width - width / 10;
+  const colorDivs = values.map(v => (
+    <div
+      style={{
+        display: 'inline-block',
+        backgroundColor: v,
+        margin: 0,
+        padding: 0,
+        width: currentWidth / values.length + 'px',
+        height: '10px',
+      }}
+    />
+  ));
+
+  return <div className={className}>{colorDivs}</div>;
+};
 
 const Visualization = props => {
   const graphId = props.match.params.id;
@@ -94,6 +132,7 @@ const Visualization = props => {
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
   const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([0, 100]);
   const graphSearchRef = useRef();
+  const currentColorScale = colorScale();
 
   const handleNewSearch = e => {
     e.preventDefault();
@@ -251,6 +290,10 @@ const Visualization = props => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
+          <ColorScale
+            className={classes.colorScale}
+            values={currentColorScale}
+          />
           <GraphContainer graphId={graphId} />
         </div>
       </main>
