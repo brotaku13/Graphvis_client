@@ -96,16 +96,24 @@ const useStyles = makeStyles(theme => ({
     left: '50%',
     transform: 'translateX(-45%)',
   },
+  labelsForColorScale: {
+    position: 'absolute',
+    top: '7em',
+    width: '100%',
+    zIndex: 9999,
+    left: '50%',
+    transform: 'translateX(-45%)',
+  }
 }));
 
-const colorScale = (max = 100) =>
+const colorScale = (min = 0, max = 101) =>
   chroma
     .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
     .mode('lch')
-    .colors(max)
+    .colors(max - min)
     .map(hex => chroma(hex).css());
 
-const ColorScale = ({ values, className }) => {
+const ColorScale = ({ values, className, labelClassName, min = 0, max = 100 }) => {
   const { width } = useWindowDimensions();
   const currentWidth = width - width / 10;
   const colorDivs = values.map(v => (
@@ -120,8 +128,33 @@ const ColorScale = ({ values, className }) => {
       }}
     />
   ));
+  const labelDivs = [];
+  const realMax = max + 1;
+  let lastPercentage = -1;
+  for (let i = min; i < realMax; ++i) {
+    let text = null;
+    console.log(i / realMax);
+    const currentPercentage = Math.round((i / realMax) * 100) / 100;
+    if (i === 0 || currentPercentage === .25 || currentPercentage === .50 || currentPercentage === .75 || i === max) {
+      if (!(currentPercentage === lastPercentage)) {
+        text = i.toString();
+        lastPercentage = currentPercentage;
+      }
+    }
+    labelDivs.push(<div style={{
+        display: 'inline-block',
+        margin: 0,
+        padding: 0,
+        width: currentWidth / values.length + 'px',
+        height: '10px',
+      }}
+    >{text}</div>);
+  }
 
-  return <div className={className}>{colorDivs}</div>;
+  return <>
+  <div className={className}>{colorDivs}</div>
+  <div className={labelClassName}>{labelDivs}</div>
+  </>;
 };
 
 const Visualization = props => {
@@ -293,6 +326,7 @@ const Visualization = props => {
           <ColorScale
             className={classes.colorScale}
             values={currentColorScale}
+            labelClassName={classes.labelsForColorScale}
           />
           <GraphContainer graphId={graphId} />
         </div>
