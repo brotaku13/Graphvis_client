@@ -40,7 +40,7 @@ const COLOR_BY = {
   DEGREE_CENTRALITY: 'degree_centrality',
   ORBIT_CENTRALITY: 'orbit_centrality',
   BETWEEN_CENTRALITY: 'between_centrality',
-}
+};
 
 const drawerWidth = 240;
 
@@ -100,7 +100,8 @@ const useStyles = makeStyles(theme => ({
   },
   list: {
     minWidth: 250,
-    padding: '0 0.5rem 0 0.5rem', /* so slider right number doesn't get cut off */
+    padding:
+      '0 0.5rem 0 0.5rem' /* so slider right number doesn't get cut off */,
   },
   colorScale: {
     position: 'absolute',
@@ -120,14 +121,14 @@ const useStyles = makeStyles(theme => ({
   },
   author: {
     display: 'inline-block',
-  }
+  },
 }));
 
 const colorScale = chroma
-    .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
-    .mode('lch')
-    .colors(100)
-    .map(hex => chroma(hex).css());
+  .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
+  .mode('lch')
+  .colors(100)
+  .map(hex => chroma(hex).css());
 
 const ColorScale = ({
   values,
@@ -155,14 +156,8 @@ const ColorScale = ({
   let lastPercentage = -1;
   for (let i = 0; i <= 100; ++i) {
     let text = null;
-    if (
-      i === 0 ||
-      i === 25 ||
-      i  === 50 ||
-      i === 75 ||
-      i === 100 
-    ) {
-    const currentPercentage = Math.round((i / 100 * max) * 100) / 100;
+    if (i === 0 || i === 25 || i === 50 || i === 75 || i === 100) {
+      const currentPercentage = Math.round((i / 100) * max * 100) / 100;
       if (!(currentPercentage === lastPercentage)) {
         text = i !== 0 ? currentPercentage.toString() : min;
         lastPercentage = currentPercentage;
@@ -199,14 +194,37 @@ const Visualization = props => {
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
-  const currentColoringMin = 20;
-  const currentColoringMax = 500;
+  const getColoringMinMax = () => {
+    // Put graph functions here taht returns an array of 2
+    switch (colorByState) {
+      case COLOR_BY.NONE:
+        return [-1];
+      case COLOR_BY.DEGREE:
+        return [20, 50];
+      case COLOR_BY.ORBIT_FREQUENCY:
+        return [20, 50];
+      case COLOR_BY.STRENGTH:
+        return [20, 50];
+      case COLOR_BY.DEGREE_CENTRALITY:
+        return [20, 50];
+      case COLOR_BY.ORBIT_CENTRALITY:
+        return [20, 50];
+      case COLOR_BY.BETWEEN_CENTRALITY:
+        return [20, 50];
+      default:
+        return [-1, -1];
+    }
+  };
+  const [currentColoringMin, currentColoringMax] = getColoringMinMax();
   const currentColorScale = colorScale;
   const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([
     currentColoringMin,
     currentColoringMax,
   ]);
-  const [debouncedEdgeWeightRangeState] = useDebounce(edgeWeightRangeState, 1000);
+  const [debouncedEdgeWeightRangeState] = useDebounce(
+    edgeWeightRangeState,
+    1000,
+  );
   const graphSearchRef = useRef();
 
   const handleNewSearch = e => {
@@ -251,7 +269,9 @@ const Visualization = props => {
       onKeyDown={toggleDrawer(side, false)}
     >
       <List>
-        <ListItem className={classes.author}><Typography align="center">by Brian Caulfield</Typography></ListItem>
+        <ListItem className={classes.author}>
+          <Typography align="center">by Brian Caulfield</Typography>
+        </ListItem>
       </List>
       <Divider />
       <List>
@@ -295,11 +315,19 @@ const Visualization = props => {
             >
               <MenuItem value={COLOR_BY.NONE}>No Color</MenuItem>
               <MenuItem value={COLOR_BY.DEGREE}>Degree</MenuItem>
-              <MenuItem value={COLOR_BY.ORBIT_FREQUENCY}>Orbit Frequency</MenuItem>
+              <MenuItem value={COLOR_BY.ORBIT_FREQUENCY}>
+                Orbit Frequency
+              </MenuItem>
               <MenuItem value={COLOR_BY.STRENGTH}>Strength</MenuItem>
-              <MenuItem value={COLOR_BY.DEGREE_CENTRALITY}>Degree Centrality</MenuItem>
-              <MenuItem value={COLOR_BY.ORBIT_CENTRALITY}>Orbit Centrality</MenuItem>
-              <MenuItem value={COLOR_BY.BETWEEN_CENTRALITY}>Between Centrality</MenuItem>
+              <MenuItem value={COLOR_BY.DEGREE_CENTRALITY}>
+                Degree Centrality
+              </MenuItem>
+              <MenuItem value={COLOR_BY.ORBIT_CENTRALITY}>
+                Orbit Centrality
+              </MenuItem>
+              <MenuItem value={COLOR_BY.BETWEEN_CENTRALITY}>
+                Between Centrality
+              </MenuItem>
             </Select>
           </FormControl>
         </ListItem>
@@ -355,7 +383,9 @@ const Visualization = props => {
             </Typography>
           </Link>
           <div className={classes.grow} />
-          <Typography className={classes.graphTitle} variant="h6">Graph Title</Typography>
+          <Typography className={classes.graphTitle} variant="h6">
+            Graph Title
+          </Typography>
           <div className={classes.grow} />
           <form onSubmit={handleNewSearch}>
             <TextField
@@ -382,14 +412,19 @@ const Visualization = props => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
-          <ColorScale
-            className={classes.colorScale}
-            values={currentColorScale}
-            labelClassName={classes.labelsForColorScale}
-            min={currentColoringMin}
-            max={currentColoringMax}
+          {colorByState !== COLOR_BY.NONE && (
+            <ColorScale
+              className={classes.colorScale}
+              values={currentColorScale}
+              labelClassName={classes.labelsForColorScale}
+              min={currentColoringMin}
+              max={currentColoringMax}
+            />
+          )}
+          <GraphContainer
+            graphId={graphId}
+            edgeWeightRange={debouncedEdgeWeightRangeState}
           />
-          <GraphContainer graphId={graphId} edgeWeightRange={debouncedEdgeWeightRangeState} />
         </div>
       </main>
     </div>

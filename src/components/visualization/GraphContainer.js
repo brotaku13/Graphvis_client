@@ -361,6 +361,7 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
   console.log(prevProps, nextProps);
   return (
     prevProps.graphId === nextProps.graphId &&
-    prevProps[0] === nextProps[0] && prevProps[1] === nextProps[1]
+    prevProps[0] === nextProps[0] &&
+    prevProps[1] === nextProps[1]
   );
 });
