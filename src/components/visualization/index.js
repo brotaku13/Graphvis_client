@@ -1,4 +1,7 @@
 import React, { useState, useRef } from 'react';
+
+import { useDebounce } from 'use-debounce';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -190,6 +193,7 @@ const Visualization = props => {
     currentColoringMin,
     currentColoringMax,
   ]);
+  const [debouncedEdgeWeightRangeState] = useDebounce(edgeWeightRangeState, 1000);
   const graphSearchRef = useRef();
 
   const handleNewSearch = e => {
@@ -367,7 +371,7 @@ const Visualization = props => {
             min={currentColoringMin}
             max={currentColoringMax}
           />
-          <GraphContainer graphId={graphId} />
+          <GraphContainer graphId={graphId} edgeWeightRange={debouncedEdgeWeightRangeState} />
         </div>
       </main>
     </div>
