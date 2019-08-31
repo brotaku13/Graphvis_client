@@ -123,11 +123,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const colorScale = (min = 0, max = 101) =>
-  chroma
+const colorScale = chroma
     .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
     .mode('lch')
-    .colors(max - min)
+    .colors(100)
     .map(hex => chroma(hex).css());
 
 const ColorScale = ({
@@ -202,7 +201,7 @@ const Visualization = props => {
   // evaluate the min and max dynamically.
   const currentColoringMin = 20;
   const currentColoringMax = 1000;
-  const currentColorScale = colorScale(currentColoringMin, currentColoringMax);
+  const currentColorScale = colorScale;
   const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([
     currentColoringMin,
     currentColoringMax,
