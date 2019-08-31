@@ -175,6 +175,8 @@ const Visualization = props => {
   const [colorByState, setColorByState] = useState(COLOR_BY.NONE);
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
   const [finalOrbitFrequencyState, setFinalOrbitFrequencyState] = useState(0);
+  const [graphTitle, setGraphTitle] = useState('');
+  const [graphAuthor, setGraphAuthor] = useState('');
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
   const getColoringMinMax = () => {
@@ -258,7 +260,9 @@ const Visualization = props => {
     >
       <List>
         <ListItem className={classes.author}>
-          <Typography align="center">by Brian Caulfield</Typography>
+          <Typography align="center">
+            {graphAuthor ? `by ${graphAuthor}` : 'No Author'}
+          </Typography>
         </ListItem>
       </List>
       <Divider />
@@ -375,7 +379,7 @@ const Visualization = props => {
           </Link>
           <div className={classes.grow} />
           <Typography className={classes.graphTitle} variant="h6">
-            Graph Title
+            {graphTitle ? graphTitle : 'No Graph Title'}
           </Typography>
           <div className={classes.grow} />
           <form onSubmit={handleNewSearch}>
@@ -416,6 +420,8 @@ const Visualization = props => {
             edgeWeightRange={debouncedEdgeWeightRangeState}
             colorBy={colorByState}
             orbitFrequency={finalOrbitFrequencyState}
+            setGraphTitle={setGraphTitle}
+            setGraphAuthor={setGraphAuthor}
           />
         </div>
       </main>

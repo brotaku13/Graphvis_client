@@ -285,6 +285,9 @@ const GraphContainer = props => {
         setOcdNodeColors(ocdNodeColors);
         setOcdEdgeColors(ocdEdgeColors);
 
+        props.setGraphTitle((res.data && res.data.name) || '');
+        props.setGraphAuthor((res.data && res.data.author) || '');
+
         setIsLoading(false);
       })
       .catch(exception => {
@@ -314,6 +317,9 @@ const GraphContainer = props => {
         setOcdGraph(ocdGrapData);
         setOcdNodeColors(ocdNodeColors);
         setOcdEdgeColors(ocdEdgeColors);
+
+        props.setGraphTitle((res.data && res.data.name) || '');
+        props.setGraphAuthor((res.data && res.data.author) || '');
 
         setIsLoading(false);
       })
