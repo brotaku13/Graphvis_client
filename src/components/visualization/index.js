@@ -153,18 +153,18 @@ const ColorScale = ({
   const labelDivs = [];
   const realMax = max + 1;
   let lastPercentage = -1;
-  for (let i = min; i < realMax; ++i) {
+  for (let i = 0; i <= 100; ++i) {
     let text = null;
-    const currentPercentage = Math.round((i / realMax) * 100) / 100;
     if (
-      i === min ||
-      currentPercentage === 0.25 ||
-      currentPercentage === 0.5 ||
-      currentPercentage === 0.75 ||
-      i === max
+      i === 0 ||
+      i === 25 ||
+      i  === 50 ||
+      i === 75 ||
+      i === 100 
     ) {
+    const currentPercentage = Math.round((i / 100 * max) * 100) / 100;
       if (!(currentPercentage === lastPercentage)) {
-        text = i.toString();
+        text = i !== 0 ? currentPercentage.toString() : min;
         lastPercentage = currentPercentage;
       }
     }
@@ -200,7 +200,7 @@ const Visualization = props => {
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
   const currentColoringMin = 20;
-  const currentColoringMax = 1000;
+  const currentColoringMax = 500;
   const currentColorScale = colorScale;
   const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([
     currentColoringMin,
