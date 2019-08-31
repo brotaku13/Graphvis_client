@@ -368,7 +368,11 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
     prevProps.graphId === nextProps.graphId &&
     prevProps[0] === nextProps[0] &&
     prevProps[1] === nextProps[1] &&
-    prevProps.colorBy === nextProps.colorBy &&
-    prevProps.orbitFrequency === nextProps.orbitFrequency
+    ((prevProps.colorBy !== 'orbit_frequency' &&
+      nextProps.colorBy === 'orbit_frequency') ||
+      prevProps.colorBy === nextProps.colorBy) &&
+    prevProps.orbitFrequency === nextProps.orbitFrequency &&
+    prevProps.selectedOrbitFrequencyBefore ===
+      nextProps.selectedOrbitFrequencyBefore
   );
 });

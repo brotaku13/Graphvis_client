@@ -177,6 +177,10 @@ const Visualization = props => {
   const [finalOrbitFrequencyState, setFinalOrbitFrequencyState] = useState(0);
   const [graphTitle, setGraphTitle] = useState('');
   const [graphAuthor, setGraphAuthor] = useState('');
+  const [
+    selectedOrbitFrequencyColorOnce,
+    setSelectedOrbitFrequencyColorOnce,
+  ] = useState(false);
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
   const getColoringMinMax = () => {
@@ -228,16 +232,12 @@ const Visualization = props => {
   };
 
   const handleFinalOrbitFrequencyState = e => {
-    const value = parseInt(e.target.value);
-    setFinalOrbitFrequencyState(value === 'NaN' ? 0 : e.target.value);
+    setFinalOrbitFrequencyState(orbitFrequencyState);
+    setSelectedOrbitFrequencyColorOnce(true);
   };
 
   const handleEdgeWeightChange = (e, newValue) => {
     setEdgeWeightRangeState(newValue);
-  };
-
-  const recolorNodesByOrbitFrequency = () => {
-    alert('recolor the nodes!');
   };
 
   const toggleDrawer = open => event => {
@@ -325,7 +325,7 @@ const Visualization = props => {
         </ListItem>
         <ListItem>
           {colorByState && colorByState === COLOR_BY.ORBIT_FREQUENCY && (
-            <form onSubmit={recolorNodesByOrbitFrequency}>
+            <form onSubmit={handleFinalOrbitFrequencyState}>
               <FormControl fullWidth>
                 <TextField
                   value={orbitFrequencyState}
@@ -420,6 +420,7 @@ const Visualization = props => {
             edgeWeightRange={debouncedEdgeWeightRangeState}
             colorBy={colorByState}
             orbitFrequency={finalOrbitFrequencyState}
+            selectedOrbitFrequencyBefore={selectedOrbitFrequencyColorOnce}
             setGraphTitle={setGraphTitle}
             setGraphAuthor={setGraphAuthor}
           />
