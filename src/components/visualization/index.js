@@ -183,7 +183,7 @@ const Visualization = props => {
     // Put graph functions here taht returns an array of 2
     switch (colorByState) {
       case COLOR_BY.NONE:
-        return [-1];
+        return [1, 100];
       case COLOR_BY.DEGREE:
         return [20, 50];
       case COLOR_BY.ORBIT_FREQUENCY:
@@ -197,7 +197,7 @@ const Visualization = props => {
       case COLOR_BY.BETWEEN_CENTRALITY:
         return [20, 50];
       default:
-        return [-1, -1];
+        return [1, 100];
     }
   };
   const [currentColoringMin, currentColoringMax] = getColoringMinMax();
