@@ -31,8 +31,6 @@ import { colorScale, COLOR_BY } from '../../utils/Colors';
 
 import useWindowDimensions from './useWindowDimensions';
 
-
-
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -221,6 +219,7 @@ const Visualization = props => {
 
   const handleOrbitFrequencyChange = e => {
     const value = parseInt(e.target.value);
+    debugger;
     setOrbitFrequencyState(value === 'NaN' ? 0 : e.target.value);
   };
 

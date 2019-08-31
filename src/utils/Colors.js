@@ -1,5 +1,4 @@
-import chroma from "chroma-js";
-
+import chroma from 'chroma-js';
 
 export const COLOR_BY = {
   DEFAULT: 'default',
@@ -12,45 +11,52 @@ export const COLOR_BY = {
 };
 
 export const colorScale = chroma
-  .scale(["purple", "blue", "cyan", "green", "yellow", "red"])
-  .mode("lch")
+  .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
+  .mode('lch')
   .colors(101)
   .map(hex => chroma(hex).css());
 
 const nodeSettings = {
   lighten: 2,
-  alpha: 0.3,
-  default: "#52248a"
+  alpha: 0.4,
+  default: '#52248a',
 };
 
 const edgeSettings = {
   lighten: 3,
   alpha: 0.2,
-  default: "#000000"
+  default: '#000000',
 };
 
 export const getColorPair = (color, lighten, alpha) => {
   return {
     selected: chroma(color).css(),
-    unselected: chroma(color).brighten(lighten).alpha(alpha).css()
+    unselected: chroma(color)
+      .brighten(lighten)
+      .alpha(alpha)
+      .css(),
   };
 };
 
 export const DefaultNodeColors = getColorPair(
   nodeSettings.default,
   nodeSettings.lighten,
-  nodeSettings.alpha
+  nodeSettings.alpha,
 );
 export const DefaultEdgeColors = getColorPair(
   edgeSettings.default,
   edgeSettings.lighten,
-  edgeSettings.alpha
+  edgeSettings.alpha,
 );
 
 export const getColorByValue = (val, min, max) => {
-  let percentIndex = Math.round(((val - min)* 100) / (max - min));
+  let percentIndex = Math.round(((val - min) * 100) / (max - min));
 
-  return getColorPair(colorScale[percentIndex], nodeSettings.lighten, nodeSettings.alpha);
+  return getColorPair(
+    colorScale[percentIndex],
+    nodeSettings.lighten,
+    nodeSettings.alpha,
+  );
 };
 
 export default {};
