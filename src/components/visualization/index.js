@@ -174,6 +174,7 @@ const Visualization = props => {
   const [drawerState, setDrawerState] = useState(false);
   const [colorByState, setColorByState] = useState(COLOR_BY.NONE);
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
+  const [finalOrbitFrequencyState, setFinalOrbitFrequencyState] = useState(0);
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
   const getColoringMinMax = () => {
@@ -220,7 +221,13 @@ const Visualization = props => {
   };
 
   const handleOrbitFrequencyChange = e => {
-    setOrbitFrequencyState(parseInt(e.target.value));
+    const value = parseInt(e.target.value);
+    setOrbitFrequencyState(value === 'NaN' ? 0 : e.target.value);
+  };
+
+  const handleFinalOrbitFrequencyState = e => {
+    const value = parseInt(e.target.value);
+    setFinalOrbitFrequencyState(value === 'NaN' ? 0 : e.target.value);
   };
 
   const handleEdgeWeightChange = (e, newValue) => {
@@ -320,7 +327,10 @@ const Visualization = props => {
                   value={orbitFrequencyState}
                   onChange={handleOrbitFrequencyChange}
                 />
-                <Button color="primary" onClick={recolorNodesByOrbitFrequency}>
+                <Button
+                  color="primary"
+                  onClick={handleFinalOrbitFrequencyState}
+                >
                   Go
                 </Button>
               </FormControl>
@@ -405,7 +415,7 @@ const Visualization = props => {
             graphId={graphId}
             edgeWeightRange={debouncedEdgeWeightRangeState}
             colorBy={colorByState}
-            orbitFrequency={orbitFrequencyState}
+            orbitFrequency={finalOrbitFrequencyState}
           />
         </div>
       </main>
