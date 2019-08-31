@@ -279,6 +279,9 @@ const GraphContainer = props => {
         setOcdNodeColors(ocdNodeColors);
         setOcdEdgeColors(ocdEdgeColors);
 
+        props.setGraphTitle((res.data && res.data.name) || '');
+        props.setGraphAuthor((res.data && res.data.author) || '');
+
         setIsLoading(false);
       })
       .catch(exception => {
@@ -309,6 +312,9 @@ const GraphContainer = props => {
         setOcdNodeColors(ocdNodeColors);
         setOcdEdgeColors(ocdEdgeColors);
 
+        props.setGraphTitle((res.data && res.data.name) || '');
+        props.setGraphAuthor((res.data && res.data.author) || '');
+
         setIsLoading(false);
       })
       .catch(exception => {
@@ -335,7 +341,7 @@ const GraphContainer = props => {
     } else {
       //Calculate the colors
       if(scheme.startsWith('orbit')){
-        colorByOrbit(props.orbitFrequency);
+        colorByOrbit(props.orbitId);
       } else {
         switch(scheme){
           case COLOR_BY.DEGREE:
@@ -365,6 +371,7 @@ const GraphContainer = props => {
   }
 
   const colorByOrbit = (orbitId) => {
+
     if(orbitId === undefined){
       orbitId = 0;
     }
@@ -441,7 +448,11 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
     prevProps.graphId === nextProps.graphId &&
     prevProps[0] === nextProps[0] &&
     prevProps[1] === nextProps[1] &&
-    prevProps.colorBy === nextProps.colorBy &&
-    prevProps.orbitFrequency === nextProps.orbitFrequency
+    ((prevProps.colorBy !== 'orbit_frequency' &&
+      nextProps.colorBy === 'orbit_frequency') ||
+      prevProps.colorBy === nextProps.colorBy) &&
+    prevProps.orbitId === nextProps.orbitId &&
+    prevProps.selectedOrbitIdBefore ===
+      nextProps.selectedOrbitIdBefore
   );
 });

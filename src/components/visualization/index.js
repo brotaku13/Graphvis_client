@@ -167,6 +167,13 @@ const Visualization = props => {
   const [drawerState, setDrawerState] = useState(false);
   const [colorByState, setColorByState] = useState(COLOR_BY.DEFAULT);
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
+  const [finalOrbitFrequencyState, setFinalOrbitFrequencyState] = useState(0);
+  const [graphTitle, setGraphTitle] = useState('');
+  const [graphAuthor, setGraphAuthor] = useState('');
+  const [
+    selectedOrbitFrequencyColorOnce,
+    setSelectedOrbitFrequencyColorOnce,
+  ] = useState(false);
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
   const getColoringMinMax = () => {
@@ -187,7 +194,7 @@ const Visualization = props => {
       case COLOR_BY.BETWEEN_CENTRALITY:
         return [20, 50];
       default:
-        return [-1, -1];
+        return [1, 100];
     }
   };
   const [currentColoringMin, currentColoringMax] = getColoringMinMax();
@@ -213,15 +220,18 @@ const Visualization = props => {
   };
 
   const handleOrbitFrequencyChange = e => {
-    setOrbitFrequencyState(parseInt(e.target.value));
+    const value = parseInt(e.target.value);
+    setOrbitFrequencyState(value === 'NaN' ? 0 : e.target.value);
+  };
+
+  const handleFinalOrbitFrequencyState = e => {
+    e.preventDefault();
+    setFinalOrbitFrequencyState(orbitFrequencyState);
+    setSelectedOrbitFrequencyColorOnce(true);
   };
 
   const handleEdgeWeightChange = (e, newValue) => {
     setEdgeWeightRangeState(newValue);
-  };
-
-  const recolorNodesByOrbitFrequency = () => {
-    alert('recolor the nodes!');
   };
 
   const toggleDrawer = open => event => {
@@ -244,7 +254,9 @@ const Visualization = props => {
     >
       <List>
         <ListItem className={classes.author}>
-          <Typography align="center">by Brian Caulfield</Typography>
+          <Typography align="center">
+            {graphAuthor ? `by ${graphAuthor}` : 'No Author'}
+          </Typography>
         </ListItem>
       </List>
       <Divider />
@@ -307,13 +319,16 @@ const Visualization = props => {
         </ListItem>
         <ListItem>
           {colorByState && colorByState === COLOR_BY.ORBIT_FREQUENCY && (
-            <form onSubmit={recolorNodesByOrbitFrequency}>
+            <form onSubmit={handleFinalOrbitFrequencyState}>
               <FormControl fullWidth>
                 <TextField
                   value={orbitFrequencyState}
                   onChange={handleOrbitFrequencyChange}
                 />
-                <Button color="primary" onClick={recolorNodesByOrbitFrequency}>
+                <Button
+                  color="primary"
+                  onClick={handleFinalOrbitFrequencyState}
+                >
                   Go
                 </Button>
               </FormControl>
@@ -358,7 +373,7 @@ const Visualization = props => {
           </Link>
           <div className={classes.grow} />
           <Typography className={classes.graphTitle} variant="h6">
-            Graph Title
+            {graphTitle ? graphTitle : 'No Graph Title'}
           </Typography>
           <div className={classes.grow} />
           <form onSubmit={handleNewSearch}>
@@ -398,7 +413,10 @@ const Visualization = props => {
             graphId={graphId}
             edgeWeightRange={debouncedEdgeWeightRangeState}
             colorBy={colorByState}
-            orbitId={orbitFrequencyState}
+            orbitId={finalOrbitFrequencyState}
+            selectedOrbitIdBefore={selectedOrbitFrequencyColorOnce}
+            setGraphTitle={setGraphTitle}
+            setGraphAuthor={setGraphAuthor}
           />
         </div>
       </main>
