@@ -404,6 +404,7 @@ const Visualization = props => {
           <GraphContainer
             graphId={graphId}
             edgeWeightRange={debouncedEdgeWeightRangeState}
+            colorBy={colorByState}
           />
         </div>
       </main>

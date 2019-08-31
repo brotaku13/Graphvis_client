@@ -177,7 +177,6 @@ const buildGraphComponents = nodes => {
 };
 
 const GraphContainer = props => {
-  console.log(props);
   const [isLoading, setIsLoading] = useState(true);
 
   const [ocdGraph, setOcdGraph] = useState(GraphData());
@@ -362,6 +361,7 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
   return (
     prevProps.graphId === nextProps.graphId &&
     prevProps[0] === nextProps[0] &&
-    prevProps[1] === nextProps[1]
+    prevProps[1] === nextProps[1] &&
+    prevProps.colorBy === nextProps.colorBy
   );
 });
