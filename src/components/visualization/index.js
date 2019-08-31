@@ -32,6 +32,16 @@ import chroma from 'chroma-js';
 
 import useWindowDimensions from './useWindowDimensions';
 
+const COLOR_BY = {
+  NONE: 'none',
+  DEGREE: 'degree',
+  ORBIT_FREQUENCY: 'orbit_frequency',
+  STRENGTH: 'strength',
+  DEGREE_CENTRALITY: 'degree_centrality',
+  ORBIT_CENTRALITY: 'orbit_centrality',
+  BETWEEN_CENTRALITY: 'between_centrality',
+}
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -89,7 +99,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
   },
   list: {
-    width: 250,
+    minWidth: 250,
+    padding: '0 0.5rem 0 0.5rem', /* so slider right number doesn't get cut off */
   },
   colorScale: {
     position: 'absolute',
@@ -107,6 +118,9 @@ const useStyles = makeStyles(theme => ({
     left: '50%',
     transform: 'translateX(-45%)',
   },
+  author: {
+    display: 'inline-block',
+  }
 }));
 
 const colorScale = (min = 0, max = 101) =>
@@ -182,7 +196,7 @@ const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
   const [drawerState, setDrawerState] = useState(false);
-  const [colorByState, setColorByState] = useState('none');
+  const [colorByState, setColorByState] = useState(COLOR_BY.NONE);
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
@@ -238,6 +252,10 @@ const Visualization = props => {
       onKeyDown={toggleDrawer(side, false)}
     >
       <List>
+        <ListItem className={classes.author}><Typography align="center">by Brian Caulfield</Typography></ListItem>
+      </List>
+      <Divider />
+      <List>
         <ListItem>
           <FormControl fullWidth>
             <Typography id="edge-weight-range" gutterBottom>
@@ -276,19 +294,18 @@ const Visualization = props => {
                 id: 'color-by',
               }}
             >
-              <MenuItem value={'none'}>No Color</MenuItem>
-              <MenuItem value={'degree'}>Degree</MenuItem>
-              <MenuItem value={'orbit_frequency'}>Orbit Frequency</MenuItem>
-              <MenuItem value={'strength'}>Strength</MenuItem>
-              <MenuItem value={'degree_centrality'}>Degree Centrality</MenuItem>
-              <MenuItem value={'between_centrality'}>
-                Between Centrality
-              </MenuItem>
+              <MenuItem value={COLOR_BY.NONE}>No Color</MenuItem>
+              <MenuItem value={COLOR_BY.DEGREE}>Degree</MenuItem>
+              <MenuItem value={COLOR_BY.ORBIT_FREQUENCY}>Orbit Frequency</MenuItem>
+              <MenuItem value={COLOR_BY.STRENGTH}>Strength</MenuItem>
+              <MenuItem value={COLOR_BY.DEGREE_CENTRALITY}>Degree Centrality</MenuItem>
+              <MenuItem value={COLOR_BY.ORBIT_CENTRALITY}>Orbit Centrality</MenuItem>
+              <MenuItem value={COLOR_BY.BETWEEN_CENTRALITY}>Between Centrality</MenuItem>
             </Select>
           </FormControl>
         </ListItem>
         <ListItem>
-          {colorByState && colorByState === 'orbit_frequency' && (
+          {colorByState && colorByState === COLOR_BY.ORBIT_FREQUENCY && (
             <form onSubmit={recolorNodesByOrbitFrequency}>
               <FormControl fullWidth>
                 <TextField
@@ -338,6 +355,8 @@ const Visualization = props => {
               UCI Graphvis
             </Typography>
           </Link>
+          <div className={classes.grow} />
+          <Typography className={classes.graphTitle} variant="h6">Graph Title</Typography>
           <div className={classes.grow} />
           <form onSubmit={handleNewSearch}>
             <TextField
