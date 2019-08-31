@@ -58,11 +58,16 @@ export const getColorByValue = (val, min, max) => {
     );
   }
   let percentIndex = Math.round(((val - min) * 100) / (max - min));
-  return getColorPair(
-    colorScale[percentIndex],
-    nodeSettings.lighten,
-    nodeSettings.alpha,
-  );
+  try {
+    return getColorPair(
+      colorScale[percentIndex],
+      nodeSettings.lighten,
+      nodeSettings.alpha,
+    );
+  } catch {
+    console.log('Error Getting colors');
+    debugger;
+  }
 };
 
 export default {};

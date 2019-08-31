@@ -202,6 +202,8 @@ const Visualization = props => {
     selectedOrbitFrequencyColorOnce,
     setSelectedOrbitFrequencyColorOnce,
   ] = useState(false);
+
+  const [isWeighted, setIsWeighted] = useState(true);
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
   const getColoringMinMax = () => {
@@ -307,6 +309,7 @@ const Visualization = props => {
         setEdgeWeightSliderDisabled(false);
       } else {
         setEdgeWeightSliderDisabled(true);
+        setIsWeighted(false);
       }
     }
   };
@@ -362,7 +365,9 @@ const Visualization = props => {
               <MenuItem value={COLOR_BY.ORBIT_FREQUENCY}>
                 Orbit Frequency
               </MenuItem>
-              <MenuItem value={COLOR_BY.STRENGTH}>Strength</MenuItem>
+              {isWeighted && (
+                <MenuItem value={COLOR_BY.STRENGTH}>Strength</MenuItem>
+              )}
               <MenuItem value={COLOR_BY.DEGREE_CENTRALITY}>
                 Degree Centrality
               </MenuItem>
@@ -421,7 +426,7 @@ const Visualization = props => {
           </Link>
           <div className={classes.grow} />
           <Typography className={classes.graphTitle} variant="h6">
-            {graphTitle ? graphTitle : 'No Graph Title'}
+            {graphTitle ? graphTitle : 'Title not Found'}
           </Typography>
           <div className={classes.grow} />
           <form onSubmit={handleNewSearch}>

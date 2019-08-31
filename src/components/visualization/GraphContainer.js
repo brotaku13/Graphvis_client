@@ -31,6 +31,8 @@ const GraphData = () => {
 };
 
 const Node = (id, abbrevName, fullName, x, y, z, orbits) => {
+  let temp = {};
+  Object.values(orbits).forEach(o => (temp[`orbit_${o.id}`] = o.frequency));
   return {
     id: id,
     abbrevName: abbrevName,
@@ -38,10 +40,13 @@ const Node = (id, abbrevName, fullName, x, y, z, orbits) => {
     fx: x,
     fy: y,
     fz: z,
-    orbits: orbits,
     selected: true,
     color: {
       default: DefaultNodeColors,
+    },
+    metrics: {
+      //place to store things like degree, betweenness centrality, orbit, etc
+      ...temp,
     },
   };
 };
@@ -139,8 +144,7 @@ const GraphContainer = props => {
   const [ocdNodeColors, setOcdNodeColors] = useState([]);
   const [ocdEdgeColors, setOcdEdgeColors] = useState([]);
 
-  const [colorSchemes, setColorSchemes] = useState(new Set([COLOR_BY.DEFAULT]));
-
+  const colorSchemes = useRef(new Set([COLOR_BY.DEFAULT]));
   const selectedNode = useRef(null);
   const nodeColorScheme = useRef(COLOR_BY.DEFAULT);
   const edgeColorScheme = useRef('default');
@@ -265,6 +269,7 @@ const GraphContainer = props => {
     }
   };
 
+  //Leaving off for now since it looks like the other one has the same effect.
   // useEffect(() => {
   //   getGraph(props.graphId)
   //     .then(res => {
@@ -341,10 +346,11 @@ const GraphContainer = props => {
     if (scheme === nodeColorScheme.current) {
       return;
     }
-    //we need to treat orbits special since their are so many of them. Caching their colors for each node would be a resource drain
+
+    //first set the new current color scheme
     nodeColorScheme.current = scheme;
-    if (colorSchemes.has(scheme)) {
-      //already calculated this, apply colors
+    if (colorSchemes.current.has(scheme)) {
+      //already calculated this, apply colorScheme
       applyColorScheme();
     } else {
       //Calculate the colors
@@ -356,12 +362,15 @@ const GraphContainer = props => {
             colorByDegree();
             break;
           //other switches here
+          case COLOR_BY.STRENGTH:
+            colorByStrength();
+            break;
         }
       }
-      setColorSchemes(new Set(...colorSchemes, scheme));
+      colorSchemes.current.add(scheme);
       applyColorScheme();
     }
-  }, [props.colorBy]);
+  }, [props]);
 
   const applyColorScheme = () => {
     //this function constructs new arrays and sets them for each graph type based on the current color scheme
@@ -371,7 +380,6 @@ const GraphContainer = props => {
         ? n.color[nodeColorScheme.current].selected
         : n.color[nodeColorScheme.current].unselected;
     });
-    setOcdNodeColors(ocdColors);
 
     let conColors = Array(conGraph.nodes.length);
     conGraph.nodes.forEach(n => {
@@ -379,6 +387,8 @@ const GraphContainer = props => {
         ? n.color[nodeColorScheme.current].selected
         : n.color[nodeColorScheme.current].unselected;
     });
+
+    setOcdNodeColors(ocdColors);
     setConNodeColors(conColors);
   };
 
@@ -388,41 +398,73 @@ const GraphContainer = props => {
     }
     let scheme = `orbit_${orbitId}`;
     let allNodes = [...ocdGraph.nodes, ...conGraph.nodes];
-    let min = Math.min.apply(
-      Math,
-      allNodes.map(n => n.orbits[orbitId].frequency),
-    );
-    let max = Math.max.apply(
-      Math,
-      allNodes.map(n => n.orbits[orbitId].frequency),
-    );
+    let min = Math.min.apply(Math, allNodes.map(n => n.metrics[scheme]));
+    let max = Math.max.apply(Math, allNodes.map(n => n.metrics[scheme]));
 
     [conGraph, ocdGraph].forEach(g => {
       g.nodes.forEach(n => {
-        n.color[scheme] = getColorByValue(
-          n.orbits[orbitId].frequency,
-          min,
-          max,
-        );
+        n.color[scheme] = getColorByValue(n.metrics[scheme], min, max);
       });
     });
     return [min, max];
   };
 
+  const colorByStrength = () => {
+    let scheme = COLOR_BY.STRENGTH;
+    let max = Number.MIN_SAFE_INTEGER;
+    let min = Number.MAX_SAFE_INTEGER;
+    let graphs = new Array(conGraph, ocdGraph);
+    let strength;
+    let adjacent;
+    graphs.forEach(g => {
+      g.cy.nodes().forEach(n => {
+        adjacent = n.neighborhood();
+        strength = adjacent.reduce((acc, el) => {
+          if (el.isEdge() && el.data().weight !== undefined) {
+            return acc + el.data().weight;
+          }
+          return acc;
+        }, 0);
+        n.data().metrics[scheme] = strength;
+        if (strength > max) {
+          max = strength;
+        } else if (strength < min) {
+          min = strength;
+        }
+      });
+    });
+
+    //apply colors
+    graphs.forEach(g => {
+      g.nodes.forEach(n => {
+        n.color[scheme] = getColorByValue(n.metrics[scheme], min, max);
+      });
+    });
+
+    return [min, max];
+  };
+
   const colorByDegree = () => {
     let scheme = COLOR_BY.DEGREE;
-    let ocdNodes = ocdGraph.cy.nodes();
-    let conNodes = conGraph.cy.nodes();
-    let min = Math.min(ocdNodes.minDegree(), conNodes.minDegree());
 
-    // fucking hack because for some reason
-    // let max = Math.max(ocdNodes.maxDegree(), conNodes.maxDegree())
-    // WOULD NOT WORK LIKE WHAT THE ACTUAL FUCK JS
-    let max1 = ocdNodes.maxDegree();
-    let max2 = conNodes.maxDegree();
-    let max = Math.max(max1, max2);
+    let max = Number.MIN_SAFE_INTEGER;
+    let min = Number.MAX_SAFE_INTEGER;
+    let degree = null;
+    let graphs = new Array(conGraph, ocdGraph);
 
-    [conGraph, ocdGraph].forEach(g => {
+    graphs.forEach(g => {
+      g.cy.nodes().forEach(n => {
+        degree = n.degree();
+        if (degree > max) {
+          max = degree;
+        } else if (degree < min) {
+          min = degree;
+        }
+        n.data().metrics.degree = degree;
+      });
+    });
+
+    graphs.forEach(g => {
       g.cy.nodes().forEach(n => {
         n.data().color[scheme] = getColorByValue(n.degree(), min, max);
       });
@@ -467,7 +509,7 @@ const GraphContainer = props => {
 // return true if we DON"T want to rerender
 export default React.memo(GraphContainer, (prevProps, nextProps) => {
   // console.log(prevProps, nextProps);
-  return (
+  let dontRerender =
     prevProps.graphId === nextProps.graphId &&
     prevProps[0] === nextProps[0] &&
     prevProps[1] === nextProps[1] &&
@@ -475,6 +517,6 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
       nextProps.colorBy === 'orbit_frequency') ||
       prevProps.colorBy === nextProps.colorBy) &&
     prevProps.orbitId === nextProps.orbitId &&
-    prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore
-  );
+    prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore;
+  return dontRerender;
 });
