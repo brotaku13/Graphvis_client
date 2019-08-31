@@ -405,6 +405,7 @@ const Visualization = props => {
             graphId={graphId}
             edgeWeightRange={debouncedEdgeWeightRangeState}
             colorBy={colorByState}
+            orbitFrequency={orbitFrequencyState}
           />
         </div>
       </main>
