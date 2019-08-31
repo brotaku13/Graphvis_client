@@ -10,6 +10,7 @@ const nodeResolution = 30;
 
 const Graph = props => {
   console.log(props);
+
   const { width } = useWindowDimensions();
   let ref = null;
 
@@ -19,7 +20,7 @@ const Graph = props => {
   const getNodeColor = node => {
     return props.nodeColors[node.id];
   };
-  const onNodeClick = node => {};
+  // const onNodeClick = node => {};
   const getEdgeColor = edge => {
     return props.edgeColors[edge.colorIndex];
   };
@@ -30,7 +31,7 @@ const Graph = props => {
   useEffect(() => {
     //component did mount
     props.setCamera(ref, props.name);
-  }, []);
+  }, [props, ref]);
 
   return (
     <ForceGraph3d

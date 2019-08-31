@@ -3,7 +3,6 @@ import cytoscape from 'cytoscape';
 
 import Graph from './graph';
 import {
-  getColorPair,
   DefaultEdgeColors,
   DefaultNodeColors,
   getColorByValue,
@@ -253,10 +252,10 @@ const GraphContainer = props => {
 
     if (selectedNode.current !== id) {
       let [ocdNodeColors, ocdEdgeColors] = highlightNeighbors(ocdGraph, id);
+      let [conNodeColors, conEdgeColors] = highlightNeighbors(conGraph, id);
+
       setOcdNodeColors(ocdNodeColors);
       setOcdEdgeColors(ocdEdgeColors);
-
-      let [conNodeColors, conEdgeColors] = highlightNeighbors(conGraph, id);
       setConNodeColors(conNodeColors);
       setConEdgeColors(conEdgeColors);
 
@@ -266,6 +265,39 @@ const GraphContainer = props => {
     }
   };
 
+  // useEffect(() => {
+  //   getGraph(props.graphId)
+  //     .then(res => {
+  //       if (res.status !== 200) {
+  //         //set errors
+  //       }
+
+  //       let [conGraphData, conNodeColors, conEdgeColors] = buildGraphComponents(
+  //         res.data.graphs.con.nodes,
+  //       );
+  //       setConGraph(conGraphData);
+  //       setConNodeColors(conNodeColors);
+  //       setConEdgeColors(conEdgeColors);
+
+  //       let [ocdGrapData, ocdNodeColors, ocdEdgeColors] = buildGraphComponents(
+  //         res.data.graphs.ocd.nodes,
+  //       );
+  //       setOcdGraph(ocdGrapData);
+  //       setOcdNodeColors(ocdNodeColors);
+  //       setOcdEdgeColors(ocdEdgeColors);
+
+  //       props.setGraphTitle((res.data && res.data.name) || '');
+  //       props.setGraphAuthor((res.data && res.data.author) || '');
+
+  //       setIsLoading(false);
+  //     })
+  //     .catch(exception => {
+  //       setConGraph(buildGraphComponents([]));
+  //       setOcdGraph(buildGraphComponents([]));
+  //       setIsLoading(false);
+  //     });
+  // }, []);
+
   useEffect(() => {
     getGraph(props.graphId)
       .then(res => {
@@ -280,48 +312,17 @@ const GraphContainer = props => {
         setConNodeColors(conNodeColors);
         setConEdgeColors(conEdgeColors);
 
-        let [ocdGrapData, ocdNodeColors, ocdEdgeColors] = buildGraphComponents(
+        let [ocdGraphData, ocdNodeColors, ocdEdgeColors] = buildGraphComponents(
           res.data.graphs.ocd.nodes,
         );
-        setOcdGraph(ocdGrapData);
+        setOcdGraph(ocdGraphData);
         setOcdNodeColors(ocdNodeColors);
         setOcdEdgeColors(ocdEdgeColors);
 
         props.setGraphTitle((res.data && res.data.name) || '');
         props.setGraphAuthor((res.data && res.data.author) || '');
 
-        setIsLoading(false);
-      })
-      .catch(exception => {
-        setConGraph(buildGraphComponents([]));
-        setOcdGraph(buildGraphComponents([]));
-        setIsLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    getGraph(props.graphId)
-      .then(res => {
-        if (res.status !== 200) {
-          //set errors
-        }
-
-        let [conGraphData, conNodeColors, conEdgeColors] = buildGraphComponents(
-          res.data.graphs.con.nodes,
-        );
-        setConGraph(conGraphData);
-        setConNodeColors(conNodeColors);
-        setConEdgeColors(conEdgeColors);
-
-        let [ocdGrapData, ocdNodeColors, ocdEdgeColors] = buildGraphComponents(
-          res.data.graphs.ocd.nodes,
-        );
-        setOcdGraph(ocdGrapData);
-        setOcdNodeColors(ocdNodeColors);
-        setOcdEdgeColors(ocdEdgeColors);
-
-        props.setGraphTitle((res.data && res.data.name) || '');
-        props.setGraphAuthor((res.data && res.data.author) || '');
+        props.setEdgeWeightRange(ocdGraphData.edges, conGraphData.edges);
 
         setIsLoading(false);
       })
@@ -357,7 +358,7 @@ const GraphContainer = props => {
           //other switches here
         }
       }
-      colorSchemes.add(scheme);
+      setColorSchemes(new Set(...colorSchemes, scheme));
       applyColorScheme();
     }
   }, [props.colorBy]);
@@ -431,9 +432,11 @@ const GraphContainer = props => {
   };
 
   if (
-    isLoading &&
-    ocdGraph.edges === undefined &&
-    ocdGraph.nodes === undefined
+    isLoading ||
+    ocdGraph.edges === undefined ||
+    ocdGraph.nodes === undefined ||
+    conGraph.nodes === undefined ||
+    conGraph.edges === undefined
   ) {
     return <div>Loading...</div>;
   } else {
@@ -463,7 +466,7 @@ const GraphContainer = props => {
 };
 // return true if we DON"T want to rerender
 export default React.memo(GraphContainer, (prevProps, nextProps) => {
-  console.log(prevProps, nextProps);
+  // console.log(prevProps, nextProps);
   return (
     prevProps.graphId === nextProps.graphId &&
     prevProps[0] === nextProps[0] &&

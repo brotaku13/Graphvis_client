@@ -16,10 +16,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import List from '@material-ui/core/List';
 import GraphContainer from './GraphContainer';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -27,11 +23,44 @@ import { Link, withRouter } from 'react-router-dom';
 import { FormControl } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/core/Slider';
+import Tooltip from '@material-ui/core/Tooltip';
+import PropTypes from 'prop-types';
 import { colorScale, COLOR_BY } from '../../utils/Colors';
 
 import useWindowDimensions from './useWindowDimensions';
 
 const drawerWidth = 240;
+
+function ValueLabelComponent(props) {
+  const { children, open, value } = props;
+
+  const popperRef = React.useRef(null);
+  React.useEffect(() => {
+    if (popperRef.current) {
+      popperRef.current.update();
+    }
+  });
+
+  return (
+    <Tooltip
+      PopperProps={{
+        popperRef,
+      }}
+      open={open}
+      enterTouchDelay={0}
+      placement="top"
+      title={value}
+    >
+      {children}
+    </Tooltip>
+  );
+}
+
+ValueLabelComponent.propTypes = {
+  children: PropTypes.element.isRequired,
+  open: PropTypes.bool.isRequired,
+  value: PropTypes.number.isRequired,
+};
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -145,6 +174,7 @@ const ColorScale = ({ className, labelClassName, min = 0, max = 100 }) => {
           width: currentWidth / colorScale.length + 'px',
           height: '10px',
         }}
+        key={i}
       >
         {text}
       </div>,
@@ -196,14 +226,24 @@ const Visualization = props => {
     }
   };
   const [currentColoringMin, currentColoringMax] = getColoringMinMax();
+
+  //slider logic
   const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([
-    currentColoringMin,
-    currentColoringMax,
+    0,
+    Number.MAX_SAFE_INTEGER,
   ]);
   const [debouncedEdgeWeightRangeState] = useDebounce(
     edgeWeightRangeState,
     1000,
   );
+  const [edgeWeightSliderDisabled, setEdgeWeightSliderDisabled] = useState(
+    true,
+  );
+  const [sliderExtrema, setSliderExtrema] = useState({
+    min: 0,
+    max: Number.MAX_SAFE_INTEGER,
+  });
+
   const graphSearchRef = useRef();
 
   const handleNewSearch = e => {
@@ -219,7 +259,6 @@ const Visualization = props => {
 
   const handleOrbitFrequencyChange = e => {
     const value = parseInt(e.target.value);
-    debugger;
     setOrbitFrequencyState(value === 'NaN' ? 0 : e.target.value);
   };
 
@@ -244,17 +283,44 @@ const Visualization = props => {
     setDrawerState(open);
   };
 
-  const sideList = side => (
-    <div
-      className={classes.list}
-      role="presentation"
-      onClick={toggleDrawer(side, false)}
-      onKeyDown={toggleDrawer(side, false)}
-    >
+  const setEdgeWeightRange = (ocdEdges, conEdges) => {
+    if (ocdEdges) {
+      let min = Number.MAX_SAFE_INTEGER;
+      let max = -1;
+      [...ocdEdges, ...conEdges].every(e => {
+        if (e.weight === undefined) {
+          min = undefined;
+          max = undefined;
+          return false;
+        } else if (e.weight < min) {
+          min = e.weight;
+        } else if (e.weight > max) {
+          max = e.weight;
+        }
+        return true;
+      });
+      if (min !== undefined && max !== undefined) {
+        min = Math.round(min * 1000) / 1000;
+        max = Math.round(max * 1000) / 1000;
+        setEdgeWeightRangeState([min, max]);
+        setSliderExtrema({ min: min, max: max });
+        setEdgeWeightSliderDisabled(false);
+      } else {
+        setEdgeWeightSliderDisabled(true);
+      }
+    }
+  };
+
+  const getSliderStep = () => {
+    return (sliderExtrema.max + sliderExtrema.min) / 100;
+  };
+
+  const sideList = () => (
+    <div className={classes.list} role="presentation" key={1}>
       <List>
         <ListItem className={classes.author}>
           <Typography align="center">
-            {graphAuthor ? `by ${graphAuthor}` : 'No Author'}
+            {graphAuthor ? `By ${graphAuthor}` : 'No Author'}
           </Typography>
         </ListItem>
       </List>
@@ -266,21 +332,14 @@ const Visualization = props => {
               Edge Weight
             </Typography>
             <Slider
-              marks={[
-                {
-                  value: currentColoringMin,
-                  label: currentColoringMin,
-                },
-                {
-                  value: currentColoringMax,
-                  label: currentColoringMax,
-                },
-              ]}
+              disabled={edgeWeightSliderDisabled}
+              ValueLabelComponent={ValueLabelComponent}
               aria-labelledby="edge-weight-range"
               value={edgeWeightRangeState}
               onChange={handleEdgeWeightChange}
-              min={currentColoringMin}
-              max={currentColoringMax}
+              min={sliderExtrema.min}
+              max={sliderExtrema.max}
+              step={getSliderStep()}
             />
           </FormControl>
         </ListItem>
@@ -336,16 +395,6 @@ const Visualization = props => {
         </ListItem>
       </List>
       <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
     </div>
   );
 
@@ -396,7 +445,7 @@ const Visualization = props => {
       </AppBar>
 
       <Drawer open={drawerState} onClose={toggleDrawer(false)}>
-        {sideList('left')}
+        {sideList()}
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
@@ -416,6 +465,7 @@ const Visualization = props => {
             selectedOrbitIdBefore={selectedOrbitFrequencyColorOnce}
             setGraphTitle={setGraphTitle}
             setGraphAuthor={setGraphAuthor}
+            setEdgeWeightRange={setEdgeWeightRange}
           />
         </div>
       </main>

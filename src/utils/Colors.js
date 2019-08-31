@@ -50,8 +50,14 @@ export const DefaultEdgeColors = getColorPair(
 );
 
 export const getColorByValue = (val, min, max) => {
+  if (max === min) {
+    return getColorPair(
+      colorScale[100],
+      nodeSettings.lighten,
+      nodeSettings.alpha,
+    );
+  }
   let percentIndex = Math.round(((val - min) * 100) / (max - min));
-
   return getColorPair(
     colorScale[percentIndex],
     nodeSettings.lighten,
