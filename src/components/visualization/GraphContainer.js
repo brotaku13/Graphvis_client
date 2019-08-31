@@ -2,12 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import cytoscape from 'cytoscape';
 
 import Graph from './graph';
-import { getColorPair, hslaString } from '../../utils/Colors';
+import { getColorPair, DefaultEdgeColors, DefaultNodeColors, getColorByValue, COLOR_BY } from '../../utils/Colors';
 
 import { getGraph } from '../../utils/GraphvisAPI';
 
-const DefaultNodeColors = getColorPair(268, 67, 32, 1, 0.4);
-const DefaultEdgeColors = getColorPair(277, 0, 0, 1, 0.2);
 
 const DefaultColorState = (len, color) => {
   return Array(len).fill(color);
@@ -24,8 +22,7 @@ const GraphData = () => {
   return {
     cy: undefined,
     nodes: undefined,
-    edges: undefined,
-    colorScheme: 'default',
+    edges: undefined
   };
 };
 
@@ -69,56 +66,6 @@ function moveCamera(position, graph, lookat) {
     lookat,
   );
 }
-
-const highlightNeighbors = (graphData, id) => {
-  let newNodeColorArr = DefaultColorState(
-    graphData.nodes.length,
-    DefaultNodeColors.selected,
-  );
-  let newEdgeColorArr = DefaultColorState(
-    graphData.edges.length,
-    DefaultEdgeColors.selected,
-  );
-
-  let cy = graphData.cy;
-  let colorScheme = graphData.colorScheme;
-
-  let elems = cy.nodes(`#${id}`);
-  if (elems.length !== 0) {
-    // debugger;
-    let neighbors = elems.closedNeighborhood();
-    let notNeighbors = cy.elements().difference(neighbors);
-
-    //un-highlight not-neighbors
-    for (let n = 0; n < notNeighbors.length; ++n) {
-      let elem = notNeighbors[n];
-      let data = elem.data();
-      data.selected = false;
-
-      if (elem.isNode()) {
-        newNodeColorArr[data.id] = data.color[colorScheme].unselected;
-      } else {
-        newEdgeColorArr[data.colorIndex] = data.color[colorScheme].unselected;
-      }
-    }
-
-    //highlight neighbors
-    for (let n = 0; n < neighbors.length; ++n) {
-      let elem = neighbors[n];
-      let data = elem.data();
-      data.selected = true;
-      if (elem.isNode()) {
-        newNodeColorArr[data.id] = data.color[colorScheme].selected;
-      } else {
-        newEdgeColorArr[data.colorIndex] = data.color[colorScheme].selected;
-      }
-    }
-  }
-
-  console.log(newEdgeColorArr);
-  console.log(newNodeColorArr);
-  return [newNodeColorArr, newEdgeColorArr];
-};
 
 const buildGraphComponents = nodes => {
   const graphData = GraphData();
@@ -188,7 +135,11 @@ const GraphContainer = props => {
   const [ocdNodeColors, setOcdNodeColors] = useState([]);
   const [ocdEdgeColors, setOcdEdgeColors] = useState([]);
 
+  const [colorSchemes, setColorSchemes] = useState(new Set([COLOR_BY.DEFAULT]))
+
   const selectedNode = useRef(null);
+  const nodeColorScheme = useRef(COLOR_BY.DEFAULT);
+  const edgeColorScheme = useRef('default');
 
   var ocdGraphRef = null;
   var conGraphRef = null;
@@ -223,37 +174,80 @@ const GraphContainer = props => {
     }
   };
 
-  const deselectAll = () => {
-    setOcdNodeColors(
-      DefaultColorState(ocdGraph.nodes.length, DefaultNodeColors.selected),
-    );
-    setOcdEdgeColors(
-      DefaultColorState(ocdGraph.edges.length, DefaultEdgeColors.selected),
-    );
-
-    setConNodeColors(
-      DefaultColorState(conGraph.nodes.length, DefaultNodeColors.selected),
-    );
-    setConEdgeColors(
-      DefaultColorState(conGraph.edges.length, DefaultEdgeColors.selected),
-    );
+  const highlightNeighbors = (graphData, id) => {
+    let newNodeColorArr = [];
+    let newEdgeColorArr = [];
+  
+    let cy = graphData.cy;
+  
+    let elems = cy.nodes(`#${id}`);
+    if (elems.length !== 0) {
+      // debugger;
+      let neighbors = elems.closedNeighborhood();
+      let notNeighbors = cy.elements().difference(neighbors);
+  
+      //un-highlight not-neighbors
+      for (let n = 0; n < notNeighbors.length; ++n) {
+        let elem = notNeighbors[n];
+        let data = elem.data();
+        data.selected = false;
+  
+        if (elem.isNode()) {
+          newNodeColorArr[data.id] = data.color[nodeColorScheme.current].unselected;
+        } else {
+          newEdgeColorArr[data.colorIndex] = data.color[edgeColorScheme.current].unselected;
+        }
+      }
+  
+      //highlight neighbors
+      for (let n = 0; n < neighbors.length; ++n) {
+        let elem = neighbors[n];
+        let data = elem.data();
+        data.selected = true;
+        if (elem.isNode()) {
+          newNodeColorArr[data.id] = data.color[nodeColorScheme.current].selected;
+        } else {
+          newEdgeColorArr[data.colorIndex] = data.color[edgeColorScheme.current].selected;
+        }
+      }
+    }
+  
+    return [newNodeColorArr, newEdgeColorArr];
   };
+
+  //needs to be reworked to color set each nodes color to the 'selected' color for the applied colorScheme
+  const deselect = (graph, nodeCB, edgeCB) => {
+
+    let newNodeColors = Array(graph.nodes.length);
+    let newEdgeColors = Array(graph.edges.length);
+
+    graph.nodes.forEach(node => {
+      newNodeColors[node.id] = node.color[nodeColorScheme.current].selected;
+    })
+
+    graph.edges.forEach(edge => {
+      newEdgeColors[edge.colorIndex] = edge.color[edgeColorScheme.current].selected;
+    })
+
+    nodeCB(newNodeColors);
+    edgeCB(newEdgeColors);    
+
+  };
+
+  const deselectAll = () => {
+    deselect(ocdGraph, setOcdNodeColors, setOcdEdgeColors);
+    deselect(conGraph, setConNodeColors, setConEdgeColors);
+  }
 
   const onNodeClick = node => {
     let id = node.id;
     deselectAll();
-    console.log('ocd here');
-    if (selectedNode.current !== id) {
-      // (async () => {
-      // })();
 
+    if (selectedNode.current !== id) {
       let [ocdNodeColors, ocdEdgeColors] = highlightNeighbors(ocdGraph, id);
       setOcdNodeColors(ocdNodeColors);
       setOcdEdgeColors(ocdEdgeColors);
-      // (async () => {
 
-      // })();
-      console.log('con here');
       let [conNodeColors, conEdgeColors] = highlightNeighbors(conGraph, id);
       setConNodeColors(conNodeColors);
       setConEdgeColors(conEdgeColors);
@@ -323,6 +317,91 @@ const GraphContainer = props => {
         setIsLoading(false);
       });
   }, [props.graphId]);
+
+  useEffect(() => {
+    let scheme = props.colorBy;
+    if(scheme === COLOR_BY.ORBIT_FREQUENCY){
+      scheme = `orbit_${props.orbitId}`
+    }
+    if(scheme === nodeColorScheme.current){
+      return;
+    }
+    //we need to treat orbits special since their are so many of them. Caching their colors for each node would be a resource drain
+    nodeColorScheme.current = scheme;
+    if(colorSchemes.has(scheme)){
+      //already calculated this, apply colors
+      applyColorScheme();
+
+    } else {
+      //Calculate the colors
+      if(scheme.startsWith('orbit')){
+        colorByOrbit(props.orbitFrequency);
+      } else {
+        switch(scheme){
+          case COLOR_BY.DEGREE:
+            colorByDegree();
+            break;
+          //other switches here
+        }
+      }
+      colorSchemes.add(scheme);
+      applyColorScheme()
+    }
+  }, [props.colorBy])
+
+  const applyColorScheme = () => {
+    //this function constructs new arrays and sets them for each graph type based on the current color scheme
+    let ocdColors = Array(ocdGraph.nodes.length);
+    ocdGraph.nodes.forEach(n => {
+      ocdColors[n.id] = n.selected ? n.color[nodeColorScheme.current].selected : n.color[nodeColorScheme.current].unselected
+    })
+    setOcdNodeColors(ocdColors);
+
+    let conColors = Array(conGraph.nodes.length);
+    conGraph.nodes.forEach(n => {
+      conColors[n.id] = n.selected ? n.color[nodeColorScheme.current].selected : n.color[nodeColorScheme.current].unselected
+    })
+    setConNodeColors(conColors);
+  }
+
+  const colorByOrbit = (orbitId) => {
+    if(orbitId === undefined){
+      orbitId = 0;
+    }
+    let scheme = `orbit_${orbitId}`;
+    let allNodes = [...ocdGraph.nodes, ...conGraph.nodes];
+    let min = Math.min.apply(Math, allNodes.map(n => n.orbits[orbitId].frequency));
+    let max = Math.max.apply(Math, allNodes.map(n => n.orbits[orbitId].frequency));
+
+    [conGraph, ocdGraph].forEach(g => {
+      g.nodes.forEach(n => {
+        n.color[scheme] = getColorByValue(n.orbits[orbitId].frequency, min, max);
+      })
+    })
+    return [min, max];
+  }
+
+  const colorByDegree = () => {
+    let scheme = COLOR_BY.DEGREE;
+    let ocdNodes = ocdGraph.cy.nodes()
+    let conNodes = conGraph.cy.nodes()
+    let min = Math.min(ocdNodes.minDegree(), conNodes.minDegree())
+  
+    // fucking hack because for some reason
+    // let max = Math.max(ocdNodes.maxDegree(), conNodes.maxDegree())
+    // WOULD NOT WORK LIKE WHAT THE ACTUAL FUCK JS
+    let max1 = ocdNodes.maxDegree();
+    let max2 = conNodes.maxDegree();
+    let max = Math.max(max1, max2);
+
+    [conGraph, ocdGraph].forEach(g => {
+      g.cy.nodes().forEach(n => {
+        n.data().color[scheme] = getColorByValue(n.degree(), min, max);
+      })
+    })
+    
+    return [min, max];
+  }
 
   if (
     isLoading &&

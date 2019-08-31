@@ -27,19 +27,11 @@ import { Link, withRouter } from 'react-router-dom';
 import { FormControl } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/core/Slider';
-import { colorScale } from '../../utils/Colors';
+import { colorScale, COLOR_BY } from '../../utils/Colors';
 
 import useWindowDimensions from './useWindowDimensions';
 
-const COLOR_BY = {
-  NONE: 'none',
-  DEGREE: 'degree',
-  ORBIT_FREQUENCY: 'orbit_frequency',
-  STRENGTH: 'strength',
-  DEGREE_CENTRALITY: 'degree_centrality',
-  ORBIT_CENTRALITY: 'orbit_centrality',
-  BETWEEN_CENTRALITY: 'between_centrality',
-};
+
 
 const drawerWidth = 240;
 
@@ -126,7 +118,7 @@ const useStyles = makeStyles(theme => ({
 const ColorScale = ({ className, labelClassName, min = 0, max = 100 }) => {
   const { width } = useWindowDimensions();
   const currentWidth = width - width / 10;
-  const colorDivs = colorScale.map(v => (
+  const colorDivs = colorScale.map((v, i) => (
     <div
       style={{
         display: 'inline-block',
@@ -136,6 +128,7 @@ const ColorScale = ({ className, labelClassName, min = 0, max = 100 }) => {
         width: currentWidth / colorScale.length + 'px',
         height: '10px',
       }}
+      key={i}
     />
   ));
   const labelDivs = [];
@@ -172,14 +165,14 @@ const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
   const [drawerState, setDrawerState] = useState(false);
-  const [colorByState, setColorByState] = useState(COLOR_BY.NONE);
+  const [colorByState, setColorByState] = useState(COLOR_BY.DEFAULT);
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
   // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
   // evaluate the min and max dynamically.
   const getColoringMinMax = () => {
     // Put graph functions here taht returns an array of 2
     switch (colorByState) {
-      case COLOR_BY.NONE:
+      case COLOR_BY.DEFAULT:
         return [-1];
       case COLOR_BY.DEGREE:
         return [20, 50];
@@ -294,7 +287,7 @@ const Visualization = props => {
                 id: 'color-by',
               }}
             >
-              <MenuItem value={COLOR_BY.NONE}>No Color</MenuItem>
+              <MenuItem value={COLOR_BY.DEFAULT}>No Color</MenuItem>
               <MenuItem value={COLOR_BY.DEGREE}>Degree</MenuItem>
               <MenuItem value={COLOR_BY.ORBIT_FREQUENCY}>
                 Orbit Frequency
@@ -393,7 +386,7 @@ const Visualization = props => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
-          {colorByState !== COLOR_BY.NONE && (
+          {colorByState !== COLOR_BY.DEFAULT && (
             <ColorScale
               className={classes.colorScale}
               labelClassName={classes.labelsForColorScale}
@@ -405,7 +398,7 @@ const Visualization = props => {
             graphId={graphId}
             edgeWeightRange={debouncedEdgeWeightRangeState}
             colorBy={colorByState}
-            orbitFrequency={orbitFrequencyState}
+            orbitId={orbitFrequencyState}
           />
         </div>
       </main>
