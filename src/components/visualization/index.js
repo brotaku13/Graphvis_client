@@ -139,7 +139,6 @@ const ColorScale = ({
   let lastPercentage = -1;
   for (let i = min; i < realMax; ++i) {
     let text = null;
-    console.log(i / realMax);
     const currentPercentage = Math.round((i / realMax) * 100) / 100;
     if (
       i === min ||
