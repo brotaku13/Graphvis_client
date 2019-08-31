@@ -1,3 +1,5 @@
+import chroma from 'chroma-js';
+
 export const adjustBrightness = (col, amt) => {
   var usePound = false;
 
@@ -72,4 +74,10 @@ export const getColorPair = (h, s, l, a, lighten) => {
   };
 };
 //hsla(282, 55%, 55%, 1)
+export const colorScale = chroma
+  .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
+  .mode('lch')
+  .colors(100)
+  .map(hex => chroma(hex).css());
+
 export default {};

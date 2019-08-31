@@ -27,8 +27,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { FormControl } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/core/Slider';
-
-import chroma from 'chroma-js';
+import { colorScale } from '../../utils/Colors';
 
 import useWindowDimensions from './useWindowDimensions';
 
@@ -124,44 +123,27 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const colorScale = chroma
-  .scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
-  .mode('lch')
-  .colors(100)
-  .map(hex => chroma(hex).css());
-
-const ColorScale = ({
-  values,
-  className,
-  labelClassName,
-  min = 0,
-  max = 100,
-}) => {
+const ColorScale = ({ className, labelClassName, min = 0, max = 100 }) => {
   const { width } = useWindowDimensions();
   const currentWidth = width - width / 10;
-  const colorDivs = values.map(v => (
+  const colorDivs = colorScale.map(v => (
     <div
       style={{
         display: 'inline-block',
         backgroundColor: v,
         margin: 0,
         padding: 0,
-        width: currentWidth / values.length + 'px',
+        width: currentWidth / colorScale.length + 'px',
         height: '10px',
       }}
     />
   ));
   const labelDivs = [];
-  const realMax = max + 1;
-  let lastPercentage = -1;
   for (let i = 0; i <= 100; ++i) {
     let text = null;
     if (i === 0 || i === 25 || i === 50 || i === 75 || i === 100) {
-      const currentPercentage = Math.round((i / 100) * max * 100) / 100;
-      if (!(currentPercentage === lastPercentage)) {
-        text = i !== 0 ? currentPercentage.toString() : min;
-        lastPercentage = currentPercentage;
-      }
+      const currentValue = min + Math.round((i / 100) * (max - min));
+      text = i !== 0 ? currentValue.toString() : min;
     }
     labelDivs.push(
       <div
@@ -169,7 +151,7 @@ const ColorScale = ({
           display: 'inline-block',
           margin: 0,
           padding: 0,
-          width: currentWidth / values.length + 'px',
+          width: currentWidth / colorScale.length + 'px',
           height: '10px',
         }}
       >
@@ -216,7 +198,6 @@ const Visualization = props => {
     }
   };
   const [currentColoringMin, currentColoringMax] = getColoringMinMax();
-  const currentColorScale = colorScale;
   const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([
     currentColoringMin,
     currentColoringMax,
@@ -415,7 +396,6 @@ const Visualization = props => {
           {colorByState !== COLOR_BY.NONE && (
             <ColorScale
               className={classes.colorScale}
-              values={currentColorScale}
               labelClassName={classes.labelsForColorScale}
               min={currentColoringMin}
               max={currentColoringMax}
