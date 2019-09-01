@@ -4,6 +4,12 @@ body {
     margin: 0;
 }
 
+@media screen and (min-width: 1024px) {
+    body {
+        overflow-y: hidden;
+    }
+}
+
 .title {
     font-family: 'Montserrat';
     font-size: 6em;
