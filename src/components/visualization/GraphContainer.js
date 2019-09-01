@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import cytoscape from 'cytoscape';
 
 import Graph from './graph';
@@ -150,7 +156,7 @@ const buildGraphComponents = nodes => {
   return [graphData, nodeColors, edgeColors];
 };
 
-const GraphContainer = props => {
+const GraphContainer = forwardRef((props, ref) => {
   const classes = useStyles();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -273,6 +279,12 @@ const GraphContainer = props => {
     deselect(ocdGraph, setOcdNodeColors, setOcdEdgeColors);
     deselect(conGraph, setConNodeColors, setConEdgeColors);
   };
+
+  useImperativeHandle(ref, () => ({
+    deselectAll() {
+      deselectAll(); // calls the above deselectAll
+    },
+  }));
 
   const onNodeClick = node => {
     let id = node.id;
@@ -593,7 +605,8 @@ const GraphContainer = props => {
       </Grid>
     );
   }
-};
+});
+
 // return true if we DON"T want to rerender
 export default React.memo(GraphContainer, (prevProps, nextProps) => {
   console.log(prevProps, nextProps);

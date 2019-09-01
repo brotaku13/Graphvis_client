@@ -228,6 +228,7 @@ const Visualization = props => {
   });
 
   const graphSearchRef = useRef();
+  const graphContainerRef = React.useRef();
 
   const handleNewSearch = e => {
     e.preventDefault();
@@ -397,6 +398,18 @@ const Visualization = props => {
         </ListItem>
       </List>
       <Divider />
+      <List>
+        <ListItem>
+          <FormControl fullWidth>
+            <Button
+              color="primary"
+              onClick={() => graphContainerRef.current.deselectAll()}
+            >
+              Deselect All
+            </Button>
+          </FormControl>
+        </ListItem>
+      </List>
     </div>
   );
 
@@ -471,6 +484,7 @@ const Visualization = props => {
             shouldSetEdgeVisibility={!edgeWeightSliderDisabled}
             setEdgeWeightRange={setEdgeWeightRange}
             setColorScaleExtrema={setColorScaleExtrema}
+            ref={graphContainerRef}
           />
         </div>
       </main>
