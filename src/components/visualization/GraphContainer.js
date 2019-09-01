@@ -518,6 +518,8 @@ const GraphContainer = props => {
                 nodeColors={ocdNodeColors}
                 edgeColors={ocdEdgeColors}
                 size={size}
+                shouldSetEdgeVisibility={props.shouldSetEdgeVisibility}
+                edgeWeightRange={props.edgeWeightRange}
               />
             )}
           </SizeMe>
