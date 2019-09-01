@@ -39,6 +39,9 @@ const Graph = props => {
         edge.weight <= props.edgeWeightRange[1]
       : true);
 
+  const handleLinkWidth = edge =>
+    props.shouldShowEdgeWeights ? edge.weight : 1;
+
   return (
     <ForceGraph3d
       ref={el => {
@@ -57,6 +60,7 @@ const Graph = props => {
       nodeOpacity={1}
       width={props.size.width}
       linkVisibility={handleLinkVisibility}
+      linkWidth={handleLinkWidth}
     />
   );
 };

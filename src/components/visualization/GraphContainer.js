@@ -571,6 +571,7 @@ const GraphContainer = forwardRef((props, ref) => {
                 edgeColors={ocdEdgeColors}
                 size={size}
                 shouldShowEdges={props.shouldShowEdges}
+                shouldShowEdgeWeights={props.shouldShowEdgeWeights}
                 shouldSetEdgeVisibility={props.shouldSetEdgeVisibility}
                 edgeWeightRange={props.edgeWeightRange}
               />
@@ -593,6 +594,7 @@ const GraphContainer = forwardRef((props, ref) => {
                 edgeColors={conEdgeColors}
                 size={size}
                 shouldShowEdges={props.shouldShowEdges}
+                shouldShowEdgeWeights={props.shouldShowEdgeWeights}
                 shouldSetEdgeVisibility={props.shouldSetEdgeVisibility}
                 edgeWeightRange={props.edgeWeightRange}
               />
@@ -619,6 +621,7 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
       prevProps.colorBy === nextProps.colorBy) &&
     prevProps.orbitId === nextProps.orbitId &&
     prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore &&
-    prevProps.shouldShowEdges === nextProps.shouldShowEdges;
+    prevProps.shouldShowEdges === nextProps.shouldShowEdges &&
+    prevProps.shouldShowEdgeWeights === nextProps.shouldShowEdgeWeights;
   return dontRerender;
 });

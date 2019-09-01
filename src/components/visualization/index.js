@@ -222,6 +222,7 @@ const Visualization = props => {
   const [edgeWeightSliderDisabled, setEdgeWeightSliderDisabled] = useState(
     true,
   );
+  const [shouldShowEdgeWeights, setShouldShowEdgeWeights] = useState(false);
   const [sliderExtrema, setSliderExtrema] = useState({
     min: 0,
     max: Number.MAX_SAFE_INTEGER,
@@ -312,15 +313,33 @@ const Visualization = props => {
       <Divider />
       <List>
         <ListItem>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={shouldShowEdges}
-                onChange={() => setShouldShowEdges(!shouldShowEdges)}
-              />
-            }
-            label="Show Edges"
-          />
+          <FormControl fullWidth>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={shouldShowEdges}
+                  onChange={() => setShouldShowEdges(!shouldShowEdges)}
+                />
+              }
+              label="Show Edges"
+            />
+          </FormControl>
+        </ListItem>
+        <ListItem>
+          <FormControl fullWidth>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={shouldShowEdgeWeights}
+                  onChange={() =>
+                    setShouldShowEdgeWeights(!shouldShowEdgeWeights)
+                  }
+                  disabled={!shouldShowEdges}
+                />
+              }
+              label="Show Edge Weights"
+            />
+          </FormControl>
         </ListItem>
         <ListItem>
           <FormControl fullWidth>
@@ -481,6 +500,7 @@ const Visualization = props => {
             setGraphTitle={setGraphTitle}
             setGraphAuthor={setGraphAuthor}
             shouldShowEdges={shouldShowEdges}
+            shouldShowEdgeWeights={shouldShowEdgeWeights}
             shouldSetEdgeVisibility={!edgeWeightSliderDisabled}
             setEdgeWeightRange={setEdgeWeightRange}
             setColorScaleExtrema={setColorScaleExtrema}
