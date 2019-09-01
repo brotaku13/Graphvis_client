@@ -4,10 +4,12 @@ import { useDebounce } from 'use-debounce';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
+import Checkbox from '@material-ui/core/Checkbox';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -216,15 +218,18 @@ const Visualization = props => {
     edgeWeightRangeState,
     1000,
   );
+  const [shouldShowEdges, setShouldShowEdges] = useState(true);
   const [edgeWeightSliderDisabled, setEdgeWeightSliderDisabled] = useState(
     true,
   );
+  const [shouldShowEdgeWeights, setShouldShowEdgeWeights] = useState(false);
   const [sliderExtrema, setSliderExtrema] = useState({
     min: 0,
     max: Number.MAX_SAFE_INTEGER,
   });
 
   const graphSearchRef = useRef();
+  const graphContainerRef = React.useRef();
 
   const handleNewSearch = e => {
     e.preventDefault();
@@ -309,11 +314,40 @@ const Visualization = props => {
       <List>
         <ListItem>
           <FormControl fullWidth>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={shouldShowEdges}
+                  onChange={() => setShouldShowEdges(!shouldShowEdges)}
+                />
+              }
+              label="Show Edges"
+            />
+          </FormControl>
+        </ListItem>
+        <ListItem>
+          <FormControl fullWidth>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={shouldShowEdgeWeights}
+                  onChange={() =>
+                    setShouldShowEdgeWeights(!shouldShowEdgeWeights)
+                  }
+                  disabled={!shouldShowEdges}
+                />
+              }
+              label="Show Edge Weights"
+            />
+          </FormControl>
+        </ListItem>
+        <ListItem>
+          <FormControl fullWidth>
             <Typography id="edge-weight-range" gutterBottom>
               Edge Weight
             </Typography>
             <Slider
-              disabled={edgeWeightSliderDisabled}
+              disabled={!shouldShowEdges || edgeWeightSliderDisabled}
               ValueLabelComponent={ValueLabelComponent}
               aria-labelledby="edge-weight-range"
               value={edgeWeightRangeState}
@@ -389,6 +423,18 @@ const Visualization = props => {
         </ListItem>
       </List>
       <Divider />
+      <List>
+        <ListItem>
+          <FormControl fullWidth>
+            <Button
+              color="primary"
+              onClick={() => graphContainerRef.current.deselectAll()}
+            >
+              Deselect All
+            </Button>
+          </FormControl>
+        </ListItem>
+      </List>
     </div>
   );
 
@@ -459,9 +505,12 @@ const Visualization = props => {
             selectedOrbitIdBefore={selectedOrbitFrequencyColorOnce}
             setGraphTitle={setGraphTitle}
             setGraphAuthor={setGraphAuthor}
+            shouldShowEdges={shouldShowEdges}
+            shouldShowEdgeWeights={shouldShowEdgeWeights}
             shouldSetEdgeVisibility={!edgeWeightSliderDisabled}
             setEdgeWeightRange={setEdgeWeightRange}
             setColorScaleExtrema={setColorScaleExtrema}
+            ref={graphContainerRef}
           />
         </div>
       </main>

@@ -45,10 +45,14 @@ const Graph = props => {
   console.log(props);
 
   const handleLinkVisibility = edge =>
-    props.shouldSetEdgeVisibility && props.edgeWeightRange
+    props.shouldShowEdges &&
+    (props.shouldSetEdgeVisibility && props.edgeWeightRange
       ? props.edgeWeightRange[0] <= edge.weight &&
         edge.weight <= props.edgeWeightRange[1]
-      : true;
+      : true);
+
+  const handleLinkWidth = edge =>
+    props.shouldShowEdgeWeights ? edge.weight : 1;
 
   return (
     <ForceGraph3d
@@ -68,6 +72,7 @@ const Graph = props => {
       nodeOpacity={1}
       width={props.size.width}
       linkVisibility={handleLinkVisibility}
+      linkWidth={handleLinkWidth}
     />
   );
 };

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import cytoscape from 'cytoscape';
 import { round } from '../../utils/Math';
 
@@ -151,7 +157,7 @@ const buildGraphComponents = nodes => {
   return [graphData, nodeColors, edgeColors];
 };
 
-const GraphContainer = props => {
+const GraphContainer = forwardRef((props, ref) => {
   const classes = useStyles();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -274,6 +280,12 @@ const GraphContainer = props => {
     deselect(ocdGraph, setOcdNodeColors, setOcdEdgeColors);
     deselect(conGraph, setConNodeColors, setConEdgeColors);
   };
+
+  useImperativeHandle(ref, () => ({
+    deselectAll() {
+      deselectAll(); // calls the above deselectAll
+    },
+  }));
 
   const onNodeClick = node => {
     let id = node.id;
@@ -559,6 +571,8 @@ const GraphContainer = props => {
                 nodeColors={ocdNodeColors}
                 edgeColors={ocdEdgeColors}
                 size={size}
+                shouldShowEdges={props.shouldShowEdges}
+                shouldShowEdgeWeights={props.shouldShowEdgeWeights}
                 shouldSetEdgeVisibility={props.shouldSetEdgeVisibility}
                 edgeWeightRange={props.edgeWeightRange}
                 currentMetric={nodeColorScheme.current}
@@ -581,6 +595,8 @@ const GraphContainer = props => {
                 nodeColors={conNodeColors}
                 edgeColors={conEdgeColors}
                 size={size}
+                shouldShowEdges={props.shouldShowEdges}
+                shouldShowEdgeWeights={props.shouldShowEdgeWeights}
                 shouldSetEdgeVisibility={props.shouldSetEdgeVisibility}
                 edgeWeightRange={props.edgeWeightRange}
                 currentMetric={nodeColorScheme.current}
@@ -594,7 +610,8 @@ const GraphContainer = props => {
       </Grid>
     );
   }
-};
+});
+
 // return true if we DON"T want to rerender
 export default React.memo(GraphContainer, (prevProps, nextProps) => {
   return (
@@ -605,6 +622,8 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
       nextProps.colorBy === 'orbit_frequency') ||
       prevProps.colorBy === nextProps.colorBy) &&
     prevProps.orbitId === nextProps.orbitId &&
-    prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore
-  );
+    prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore &&
+    prevProps.shouldShowEdges === nextProps.shouldShowEdges &&
+    prevProps.shouldShowEdgeWeights === nextProps.shouldShowEdgeWeights;
+  return dontRerender;
 });
