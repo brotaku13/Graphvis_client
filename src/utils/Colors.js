@@ -6,7 +6,6 @@ export const COLOR_BY = {
   ORBIT_FREQUENCY: 'orbit_frequency',
   STRENGTH: 'strength',
   DEGREE_CENTRALITY: 'degree_centrality',
-  ORBIT_CENTRALITY: 'orbit_centrality',
   BETWEEN_CENTRALITY: 'between_centrality',
 };
 

@@ -227,7 +227,7 @@ const Visualization = props => {
         return [1, 100];
     }
   };
-  const [currentColoringMin, currentColoringMax] = getColoringMinMax();
+  const [colorScaleExtrema, setColorScaleExtrema] = useState([0, 100]);
 
   //slider logic
   const [edgeWeightRangeState, setEdgeWeightRangeState] = useState([
@@ -371,9 +371,6 @@ const Visualization = props => {
               <MenuItem value={COLOR_BY.DEGREE_CENTRALITY}>
                 Degree Centrality
               </MenuItem>
-              <MenuItem value={COLOR_BY.ORBIT_CENTRALITY}>
-                Orbit Centrality
-              </MenuItem>
               <MenuItem value={COLOR_BY.BETWEEN_CENTRALITY}>
                 Between Centrality
               </MenuItem>
@@ -458,8 +455,8 @@ const Visualization = props => {
             <ColorScale
               className={classes.colorScale}
               labelClassName={classes.labelsForColorScale}
-              min={currentColoringMin}
-              max={currentColoringMax}
+              min={colorScaleExtrema[0]}
+              max={colorScaleExtrema[1]}
             />
           )}
           <GraphContainer
@@ -471,6 +468,7 @@ const Visualization = props => {
             setGraphTitle={setGraphTitle}
             setGraphAuthor={setGraphAuthor}
             setEdgeWeightRange={setEdgeWeightRange}
+            setColorScaleExtrema={setColorScaleExtrema}
           />
         </div>
       </main>

@@ -144,7 +144,9 @@ const GraphContainer = props => {
   const [ocdNodeColors, setOcdNodeColors] = useState([]);
   const [ocdEdgeColors, setOcdEdgeColors] = useState([]);
 
-  const colorSchemes = useRef(new Set([COLOR_BY.DEFAULT]));
+  const colorSchemes = useRef({
+    [COLOR_BY.DEFAULT]: [],
+  });
   const selectedNode = useRef(null);
   const nodeColorScheme = useRef(COLOR_BY.DEFAULT);
   const edgeColorScheme = useRef('default');
@@ -234,11 +236,13 @@ const GraphContainer = props => {
 
     graph.nodes.forEach(node => {
       newNodeColors[node.id] = node.color[nodeColorScheme.current].selected;
+      node.selected = true;
     });
 
     graph.edges.forEach(edge => {
       newEdgeColors[edge.colorIndex] =
         edge.color[edgeColorScheme.current].selected;
+      edge.selected = true;
     });
 
     nodeCB(newNodeColors);
@@ -268,40 +272,6 @@ const GraphContainer = props => {
       selectedNode.current = null;
     }
   };
-
-  //Leaving off for now since it looks like the other one has the same effect.
-  // useEffect(() => {
-  //   getGraph(props.graphId)
-  //     .then(res => {
-  //       if (res.status !== 200) {
-  //         //set errors
-  //       }
-
-  //       let [conGraphData, conNodeColors, conEdgeColors] = buildGraphComponents(
-  //         res.data.graphs.con.nodes,
-  //       );
-  //       setConGraph(conGraphData);
-  //       setConNodeColors(conNodeColors);
-  //       setConEdgeColors(conEdgeColors);
-
-  //       let [ocdGrapData, ocdNodeColors, ocdEdgeColors] = buildGraphComponents(
-  //         res.data.graphs.ocd.nodes,
-  //       );
-  //       setOcdGraph(ocdGrapData);
-  //       setOcdNodeColors(ocdNodeColors);
-  //       setOcdEdgeColors(ocdEdgeColors);
-
-  //       props.setGraphTitle((res.data && res.data.name) || '');
-  //       props.setGraphAuthor((res.data && res.data.author) || '');
-
-  //       setIsLoading(false);
-  //     })
-  //     .catch(exception => {
-  //       setConGraph(buildGraphComponents([]));
-  //       setOcdGraph(buildGraphComponents([]));
-  //       setIsLoading(false);
-  //     });
-  // }, []);
 
   useEffect(() => {
     getGraph(props.graphId)
@@ -349,36 +319,48 @@ const GraphContainer = props => {
 
     //first set the new current color scheme
     nodeColorScheme.current = scheme;
-    if (colorSchemes.current.has(scheme)) {
+    if (scheme in colorSchemes.current) {
       //already calculated this, apply colorScheme
       applyColorScheme();
     } else {
       //Calculate the colors
+      let extrema;
       if (scheme.startsWith('orbit')) {
-        colorByOrbit(props.orbitId);
+        extrema = colorByOrbit(props.orbitId);
       } else {
         switch (scheme) {
           case COLOR_BY.DEGREE:
-            colorByDegree();
+            extrema = colorByDegree();
             break;
           //other switches here
           case COLOR_BY.STRENGTH:
-            colorByStrength();
+            extrema = colorByStrength();
+            break;
+          case COLOR_BY.DEGREE_CENTRALITY:
+            extrema = colorByDegreeCentrality();
+            break;
+          case COLOR_BY.BETWEEN_CENTRALITY:
+            extrema = colorByBetweennessCentrality();
             break;
         }
       }
-      colorSchemes.current.add(scheme);
+      colorSchemes.current[scheme] = extrema;
       applyColorScheme();
     }
   }, [props]);
 
   const applyColorScheme = () => {
     //this function constructs new arrays and sets them for each graph type based on the current color scheme
+    props.setColorScaleExtrema(colorSchemes.current[nodeColorScheme.current]);
+
     let ocdColors = Array(ocdGraph.nodes.length);
     ocdGraph.nodes.forEach(n => {
       ocdColors[n.id] = n.selected
         ? n.color[nodeColorScheme.current].selected
         : n.color[nodeColorScheme.current].unselected;
+      if (!n.selected) {
+        console.log(n);
+      }
     });
 
     let conColors = Array(conGraph.nodes.length);
@@ -386,6 +368,9 @@ const GraphContainer = props => {
       conColors[n.id] = n.selected
         ? n.color[nodeColorScheme.current].selected
         : n.color[nodeColorScheme.current].unselected;
+      if (!n.selected) {
+        console.log(n);
+      }
     });
 
     setOcdNodeColors(ocdColors);
@@ -445,8 +430,34 @@ const GraphContainer = props => {
   };
 
   const colorByDegreeCentrality = () => {
-    
-  }
+    let scheme = COLOR_BY.DEGREE_CENTRALITY;
+    let centralityConfig = {
+      root: undefined,
+      weight: e => e.data().weight,
+    };
+    let max = Number.MIN_SAFE_INTEGER;
+    let min = Number.MAX_SAFE_INTEGER;
+    let graphs = new Array(conGraph, ocdGraph);
+    graphs.forEach(g => {
+      g.cy.nodes().forEach(n => {
+        centralityConfig.root = n;
+        let degreeCen = g.cy.$().degreeCentrality(centralityConfig).degree;
+        n.data().metrics[scheme] = degreeCen;
+        if (degreeCen > max) {
+          max = degreeCen;
+        } else if (degreeCen < min) {
+          min = degreeCen;
+        }
+      });
+    });
+
+    graphs.forEach(g => {
+      g.nodes.forEach(n => {
+        n.color[scheme] = getColorByValue(n.metrics[scheme], min, max);
+      });
+    });
+    return [min, max];
+  };
 
   const colorByDegree = () => {
     let scheme = COLOR_BY.DEGREE;
@@ -471,6 +482,33 @@ const GraphContainer = props => {
     graphs.forEach(g => {
       g.cy.nodes().forEach(n => {
         n.data().color[scheme] = getColorByValue(n.degree(), min, max);
+      });
+    });
+
+    return [min, max];
+  };
+
+  const colorByBetweennessCentrality = () => {
+    let scheme = COLOR_BY.BETWEEN_CENTRALITY;
+    let max = Number.MIN_SAFE_INTEGER;
+    let min = Number.MAX_SAFE_INTEGER;
+    let graphs = new Array(conGraph, ocdGraph);
+    graphs.forEach(g => {
+      let bc = g.cy.$().betweennessCentrality();
+      g.cy.nodes().forEach(n => {
+        let val = bc.betweenness(n);
+        n.data().metrics[scheme] = val;
+        if (val > max) {
+          max = val;
+        } else if (val < min) {
+          min = val;
+        }
+      });
+    });
+
+    graphs.forEach(g => {
+      g.nodes.forEach(n => {
+        n.color[scheme] = getColorByValue(n.metrics[scheme], min, max);
       });
     });
 
