@@ -1,7 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ForceGraph3d from 'react-force-graph-3d';
-
-import useWindowDimensions from './useWindowDimensions';
 
 //use this for displaying data only.
 //any graph data manipulation should be done in the container class
@@ -11,7 +9,6 @@ const nodeResolution = 30;
 const Graph = props => {
   console.log(props);
 
-  const { width } = useWindowDimensions();
   let ref = null;
 
   const getNodeLabel = node => {
@@ -33,6 +30,8 @@ const Graph = props => {
     props.setCamera(ref, props.name);
   }, [props, ref]);
 
+  console.log(props.size);
+
   return (
     <ForceGraph3d
       ref={el => {
@@ -48,10 +47,13 @@ const Graph = props => {
       onNodeClick={node => props.onNodeClick(node)}
       linkColor={edge => getEdgeColor(edge)}
       linkWidth={edge => getEdgeWidth(edge)}
-      width={width / 2}
       nodeOpacity={1}
+      width={props.size.width}
     />
   );
 };
 
-export default Graph;
+export default React.memo(Graph, (prevProps, nextProps) => {
+  console.log(prevProps, nextProps);
+  return prevProps.width !== nextProps.width;
+});

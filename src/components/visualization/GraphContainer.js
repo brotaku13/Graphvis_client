@@ -11,16 +11,34 @@ import {
 
 import { getGraph } from '../../utils/GraphvisAPI';
 
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+
+import { SizeMe } from 'react-sizeme';
+import { makeStyles } from '@material-ui/core/styles';
+
 const DefaultColorState = (len, color) => {
   return Array(len).fill(color);
 };
 
 const styles = {
-  root: {
-    display: 'flex',
-    flexDirection: 'row',
+  root: {},
+
+  graphText: {
+    position: 'absolute',
+    bottom: '2em',
+    left: '50%',
+    transform: 'translateX(-45%)',
+    display: 'inline-block',
   },
 };
+
+const useStyles = makeStyles(theme => ({
+  gridRow: {
+    position: 'relative',
+    backgroundColor: 'black',
+  },
+}));
 
 const GraphData = () => {
   return {
@@ -133,6 +151,8 @@ const buildGraphComponents = nodes => {
 };
 
 const GraphContainer = props => {
+  const classes = useStyles();
+
   const [isLoading, setIsLoading] = useState(true);
 
   const [ocdGraph, setOcdGraph] = useState(GraphData());
@@ -444,9 +464,7 @@ const GraphContainer = props => {
     return [min, max];
   };
 
-  const colorByDegreeCentrality = () => {
-    
-  }
+  const colorByDegreeCentrality = () => {};
 
   const colorByDegree = () => {
     let scheme = COLOR_BY.DEGREE;
@@ -487,32 +505,52 @@ const GraphContainer = props => {
     return <div>Loading...</div>;
   } else {
     return (
-      <div style={styles.root}>
-        <Graph
-          name="ocd"
-          nodes={ocdGraph.nodes}
-          edges={ocdGraph.edges}
-          setCamera={setCamera}
-          onNodeClick={onNodeClick}
-          nodeColors={ocdNodeColors}
-          edgeColors={ocdEdgeColors}
-        />
-        <Graph
-          name="con"
-          nodes={conGraph.nodes}
-          edges={conGraph.edges}
-          setCamera={setCamera}
-          onNodeClick={onNodeClick}
-          nodeColors={conNodeColors}
-          edgeColors={conEdgeColors}
-        />
-      </div>
+      <Grid container>
+        <Grid item xs={12} md={6} className={classes.gridRow}>
+          <SizeMe refreshRate={500} noPlaceholder>
+            {({ size }) => (
+              <Graph
+                name="ocd"
+                nodes={ocdGraph.nodes}
+                edges={ocdGraph.edges}
+                setCamera={setCamera}
+                onNodeClick={onNodeClick}
+                nodeColors={ocdNodeColors}
+                edgeColors={ocdEdgeColors}
+                size={size}
+              />
+            )}
+          </SizeMe>
+          <div style={styles.graphText}>
+            <Typography variant="h6">OCD Graph</Typography>
+          </div>
+        </Grid>
+        <Grid item xs={12} md={6} className={classes.gridRow}>
+          <SizeMe refreshRate={500} noPlaceholder>
+            {({ size }) => (
+              <Graph
+                name="con"
+                nodes={conGraph.nodes}
+                edges={conGraph.edges}
+                setCamera={setCamera}
+                onNodeClick={onNodeClick}
+                nodeColors={conNodeColors}
+                edgeColors={conEdgeColors}
+                size={size}
+              />
+            )}
+          </SizeMe>
+          <div style={styles.graphText}>
+            <Typography variant="h6">Con Graph</Typography>
+          </div>
+        </Grid>
+      </Grid>
     );
   }
 };
 // return true if we DON"T want to rerender
 export default React.memo(GraphContainer, (prevProps, nextProps) => {
-  // console.log(prevProps, nextProps);
+  console.log(prevProps, nextProps);
   let dontRerender =
     prevProps.graphId === nextProps.graphId &&
     prevProps[0] === nextProps[0] &&
