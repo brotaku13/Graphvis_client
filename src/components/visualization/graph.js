@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ForceGraph3d from 'react-force-graph-3d';
+import { COLOR_BY, COLOR_BY_LABELS } from '../../utils/Colors';
 
 //use this for displaying data only.
 //any graph data manipulation should be done in the container class
@@ -12,7 +13,18 @@ const Graph = props => {
   let ref = null;
 
   const getNodeLabel = node => {
-    return node.id;
+    let metric = '';
+
+    if (props.currentMetric !== COLOR_BY.DEFAULT.value) {
+      metric = `<div>
+                  ${props.currentMetric}: ${node.metrics[props.currentMetric]}
+                </div>`;
+    }
+
+    return `<div class="tooltip">
+              <div>${node.fullName}</div>
+              ${metric}
+            </div>`;
   };
   const getNodeColor = node => {
     return props.nodeColors[node.id];

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import cytoscape from 'cytoscape';
+import { round } from '../../utils/Math';
 
 import Graph from './graph';
 import {
@@ -165,10 +166,10 @@ const GraphContainer = props => {
   const [ocdEdgeColors, setOcdEdgeColors] = useState([]);
 
   const colorSchemes = useRef({
-    [COLOR_BY.DEFAULT]: [],
+    [COLOR_BY.DEFAULT.value]: [],
   });
   const selectedNode = useRef(null);
-  const nodeColorScheme = useRef(COLOR_BY.DEFAULT);
+  const nodeColorScheme = useRef(COLOR_BY.DEFAULT.value);
   const edgeColorScheme = useRef('default');
 
   var ocdGraphRef = null;
@@ -330,7 +331,7 @@ const GraphContainer = props => {
 
   useEffect(() => {
     let scheme = props.colorBy;
-    if (scheme === COLOR_BY.ORBIT_FREQUENCY) {
+    if (scheme === COLOR_BY.ORBIT_FREQUENCY.value) {
       scheme = `orbit_${props.orbitId}`;
     }
     if (scheme === nodeColorScheme.current) {
@@ -349,17 +350,17 @@ const GraphContainer = props => {
         extrema = colorByOrbit(props.orbitId);
       } else {
         switch (scheme) {
-          case COLOR_BY.DEGREE:
+          case COLOR_BY.DEGREE.value:
             extrema = colorByDegree();
             break;
           //other switches here
-          case COLOR_BY.STRENGTH:
+          case COLOR_BY.STRENGTH.value:
             extrema = colorByStrength();
             break;
-          case COLOR_BY.DEGREE_CENTRALITY:
+          case COLOR_BY.DEGREE_CENTRALITY.value:
             extrema = colorByDegreeCentrality();
             break;
-          case COLOR_BY.BETWEEN_CENTRALITY:
+          case COLOR_BY.BETWEEN_CENTRALITY.value:
             extrema = colorByBetweennessCentrality();
             break;
         }
@@ -415,7 +416,7 @@ const GraphContainer = props => {
   };
 
   const colorByStrength = () => {
-    let scheme = COLOR_BY.STRENGTH;
+    let scheme = COLOR_BY.STRENGTH.value;
     let max = Number.MIN_SAFE_INTEGER;
     let min = Number.MAX_SAFE_INTEGER;
     let graphs = new Array(conGraph, ocdGraph);
@@ -424,12 +425,15 @@ const GraphContainer = props => {
     graphs.forEach(g => {
       g.cy.nodes().forEach(n => {
         adjacent = n.neighborhood();
-        strength = adjacent.reduce((acc, el) => {
-          if (el.isEdge() && el.data().weight !== undefined) {
-            return acc + el.data().weight;
-          }
-          return acc;
-        }, 0);
+        strength = round(
+          adjacent.reduce((acc, el) => {
+            if (el.isEdge() && el.data().weight !== undefined) {
+              return acc + el.data().weight;
+            }
+            return acc;
+          }, 0),
+          2,
+        );
         n.data().metrics[scheme] = strength;
         if (strength > max) {
           max = strength;
@@ -450,18 +454,15 @@ const GraphContainer = props => {
   };
 
   const colorByDegreeCentrality = () => {
-    let scheme = COLOR_BY.DEGREE_CENTRALITY;
-    let centralityConfig = {
-      root: undefined,
-      weight: e => e.data().weight,
-    };
+    let scheme = COLOR_BY.DEGREE_CENTRALITY.value;
     let max = Number.MIN_SAFE_INTEGER;
     let min = Number.MAX_SAFE_INTEGER;
     let graphs = new Array(conGraph, ocdGraph);
     graphs.forEach(g => {
+      let dc = g.cy.$().degreeCentralityNormalized();
       g.cy.nodes().forEach(n => {
-        centralityConfig.root = n;
-        let degreeCen = g.cy.$().degreeCentrality(centralityConfig).degree;
+        // centralityConfig.root = n;
+        let degreeCen = round(dc.degree(n), 3);
         n.data().metrics[scheme] = degreeCen;
         if (degreeCen > max) {
           max = degreeCen;
@@ -480,7 +481,7 @@ const GraphContainer = props => {
   };
 
   const colorByDegree = () => {
-    let scheme = COLOR_BY.DEGREE;
+    let scheme = COLOR_BY.DEGREE.value;
 
     let max = Number.MIN_SAFE_INTEGER;
     let min = Number.MAX_SAFE_INTEGER;
@@ -509,14 +510,14 @@ const GraphContainer = props => {
   };
 
   const colorByBetweennessCentrality = () => {
-    let scheme = COLOR_BY.BETWEEN_CENTRALITY;
+    let scheme = COLOR_BY.BETWEEN_CENTRALITY.value;
     let max = Number.MIN_SAFE_INTEGER;
     let min = Number.MAX_SAFE_INTEGER;
     let graphs = new Array(conGraph, ocdGraph);
     graphs.forEach(g => {
       let bc = g.cy.$().betweennessCentrality();
       g.cy.nodes().forEach(n => {
-        let val = bc.betweenness(n);
+        let val = round(bc.betweenness(n), 2);
         n.data().metrics[scheme] = val;
         if (val > max) {
           max = val;
@@ -560,6 +561,7 @@ const GraphContainer = props => {
                 size={size}
                 shouldSetEdgeVisibility={props.shouldSetEdgeVisibility}
                 edgeWeightRange={props.edgeWeightRange}
+                currentMetric={nodeColorScheme.current}
               />
             )}
           </SizeMe>
@@ -581,11 +583,12 @@ const GraphContainer = props => {
                 size={size}
                 shouldSetEdgeVisibility={props.shouldSetEdgeVisibility}
                 edgeWeightRange={props.edgeWeightRange}
+                currentMetric={nodeColorScheme.current}
               />
             )}
           </SizeMe>
           <div style={styles.graphText}>
-            <Typography variant="h6">Con Graph</Typography>
+            <Typography variant="h6">Control Graph</Typography>
           </div>
         </Grid>
       </Grid>
@@ -594,8 +597,7 @@ const GraphContainer = props => {
 };
 // return true if we DON"T want to rerender
 export default React.memo(GraphContainer, (prevProps, nextProps) => {
-  console.log(prevProps, nextProps);
-  let dontRerender =
+  return (
     prevProps.graphId === nextProps.graphId &&
     prevProps.edgeWeightRange[0] === nextProps.edgeWeightRange[0] &&
     prevProps.edgeWeightRange[1] === nextProps.edgeWeightRange[1] &&
@@ -603,6 +605,6 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
       nextProps.colorBy === 'orbit_frequency') ||
       prevProps.colorBy === nextProps.colorBy) &&
     prevProps.orbitId === nextProps.orbitId &&
-    prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore;
-  return dontRerender;
+    prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore
+  );
 });

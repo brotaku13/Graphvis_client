@@ -1,12 +1,39 @@
 import chroma from 'chroma-js';
 
 export const COLOR_BY = {
-  DEFAULT: 'default',
-  DEGREE: 'degree',
-  ORBIT_FREQUENCY: 'orbit_frequency',
-  STRENGTH: 'strength',
-  DEGREE_CENTRALITY: 'degree_centrality',
-  BETWEEN_CENTRALITY: 'between_centrality',
+  DEFAULT: {
+    value: 'default',
+    label: 'No Color',
+  },
+  DEGREE: {
+    value: 'degree',
+    label: 'Degree',
+  },
+  ORBIT_FREQUENCY: {
+    value: 'orbit_frequency',
+    label: 'Orbit Frequency',
+  },
+  STRENGTH: {
+    value: 'strength',
+    label: 'Strength',
+  },
+  DEGREE_CENTRALITY: {
+    value: 'degree_centrality',
+    label: 'Degree Centrality',
+  },
+  BETWEEN_CENTRALITY: {
+    value: 'between_centrality',
+    label: 'Between Centrality',
+  },
+};
+
+export const COLOR_BY_LABELS = {
+  [COLOR_BY.DEGREE.value]: COLOR_BY.DEGREE.label,
+  [COLOR_BY.DEFAULT.value]: COLOR_BY.DEFAULT.label,
+  [COLOR_BY.ORBIT_FREQUENCY.value]: COLOR_BY.ORBIT_FREQUENCY.label,
+  [COLOR_BY.STRENGTH.value]: COLOR_BY.STRENGTH.label,
+  [COLOR_BY.DEGREE_CENTRALITY.value]: COLOR_BY.DEGREE_CENTRALITY.label,
+  [COLOR_BY.BETWEEN_CENTRALITY.value]: COLOR_BY.BETWEEN_CENTRALITY.label,
 };
 
 export const colorScale = chroma

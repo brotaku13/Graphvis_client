@@ -193,7 +193,7 @@ const Visualization = props => {
   const graphId = props.match.params.id;
   const classes = useStyles();
   const [drawerState, setDrawerState] = useState(false);
-  const [colorByState, setColorByState] = useState(COLOR_BY.DEFAULT);
+  const [colorByState, setColorByState] = useState(COLOR_BY.DEFAULT.value);
   const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
   const [finalOrbitFrequencyState, setFinalOrbitFrequencyState] = useState(0);
   const [graphTitle, setGraphTitle] = useState('');
@@ -204,29 +204,7 @@ const Visualization = props => {
   ] = useState(false);
 
   const [isWeighted, setIsWeighted] = useState(true);
-  // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
-  // evaluate the min and max dynamically.
-  const getColoringMinMax = () => {
-    // Put graph functions here taht returns an array of 2
-    switch (colorByState) {
-      case COLOR_BY.DEFAULT:
-        return [-1];
-      case COLOR_BY.DEGREE:
-        return [20, 50];
-      case COLOR_BY.ORBIT_FREQUENCY:
-        return [20, 50];
-      case COLOR_BY.STRENGTH:
-        return [20, 50];
-      case COLOR_BY.DEGREE_CENTRALITY:
-        return [20, 50];
-      case COLOR_BY.ORBIT_CENTRALITY:
-        return [20, 50];
-      case COLOR_BY.BETWEEN_CENTRALITY:
-        return [20, 50];
-      default:
-        return [1, 100];
-    }
-  };
+
   const [colorScaleExtrema, setColorScaleExtrema] = useState([0, 100]);
 
   //slider logic
@@ -368,25 +346,31 @@ const Visualization = props => {
                 id: 'color-by',
               }}
             >
-              <MenuItem value={COLOR_BY.DEFAULT}>No Color</MenuItem>
-              <MenuItem value={COLOR_BY.DEGREE}>Degree</MenuItem>
-              <MenuItem value={COLOR_BY.ORBIT_FREQUENCY}>
-                Orbit Frequency
+              <MenuItem value={COLOR_BY.DEFAULT.value}>
+                {COLOR_BY.DEFAULT.label}
+              </MenuItem>
+              <MenuItem value={COLOR_BY.DEGREE.value}>
+                {COLOR_BY.DEGREE.label}
+              </MenuItem>
+              <MenuItem value={COLOR_BY.ORBIT_FREQUENCY.value}>
+                {COLOR_BY.ORBIT_FREQUENCY.label}
               </MenuItem>
               {isWeighted && (
-                <MenuItem value={COLOR_BY.STRENGTH}>Strength</MenuItem>
+                <MenuItem value={COLOR_BY.STRENGTH.value}>
+                  {COLOR_BY.STRENGTH.label}
+                </MenuItem>
               )}
-              <MenuItem value={COLOR_BY.DEGREE_CENTRALITY}>
-                Degree Centrality
+              <MenuItem value={COLOR_BY.DEGREE_CENTRALITY.value}>
+                {COLOR_BY.DEGREE_CENTRALITY.label}
               </MenuItem>
-              <MenuItem value={COLOR_BY.BETWEEN_CENTRALITY}>
-                Between Centrality
+              <MenuItem value={COLOR_BY.BETWEEN_CENTRALITY.value}>
+                {COLOR_BY.BETWEEN_CENTRALITY.label}
               </MenuItem>
             </Select>
           </FormControl>
         </ListItem>
         <ListItem>
-          {colorByState && colorByState === COLOR_BY.ORBIT_FREQUENCY && (
+          {colorByState && colorByState === COLOR_BY.ORBIT_FREQUENCY.value && (
             <form onSubmit={handleFinalOrbitFrequencyState}>
               <FormControl fullWidth>
                 <TextField
@@ -459,7 +443,7 @@ const Visualization = props => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.graphContainer}>
-          {colorByState !== COLOR_BY.DEFAULT && (
+          {colorByState !== COLOR_BY.DEFAULT.value && (
             <ColorScale
               className={classes.colorScale}
               labelClassName={classes.labelsForColorScale}
