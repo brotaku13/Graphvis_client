@@ -343,6 +343,14 @@ const Visualization = props => {
               min={sliderExtrema.min}
               max={sliderExtrema.max}
               step={getSliderStep()}
+              marks={
+                !edgeWeightSliderDisabled
+                  ? [
+                      { value: sliderExtrema.min, label: sliderExtrema.min },
+                      { value: sliderExtrema.max, label: sliderExtrema.max },
+                    ]
+                  : []
+              }
             />
           </FormControl>
         </ListItem>
@@ -470,6 +478,7 @@ const Visualization = props => {
             selectedOrbitIdBefore={selectedOrbitFrequencyColorOnce}
             setGraphTitle={setGraphTitle}
             setGraphAuthor={setGraphAuthor}
+            shouldSetEdgeVisibility={!edgeWeightSliderDisabled}
             setEdgeWeightRange={setEdgeWeightRange}
           />
         </div>

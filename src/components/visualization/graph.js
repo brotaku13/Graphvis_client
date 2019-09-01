@@ -30,7 +30,13 @@ const Graph = props => {
     props.setCamera(ref, props.name);
   }, [props, ref]);
 
-  console.log(props.size);
+  console.log(props);
+
+  const handleLinkVisibility = edge =>
+    props.shouldSetEdgeVisibility && props.edgeWeightRange
+      ? props.edgeWeightRange[0] <= edge.weight &&
+        edge.weight <= props.edgeWeightRange[1]
+      : true;
 
   return (
     <ForceGraph3d
@@ -49,6 +55,7 @@ const Graph = props => {
       linkWidth={edge => getEdgeWidth(edge)}
       nodeOpacity={1}
       width={props.size.width}
+      linkVisibility={handleLinkVisibility}
     />
   );
 };

@@ -507,7 +507,7 @@ const GraphContainer = props => {
     return (
       <Grid container>
         <Grid item xs={12} md={6} className={classes.gridRow}>
-          <SizeMe refreshRate={500} noPlaceholder>
+          <SizeMe refreshRate={16} noPlaceholder>
             {({ size }) => (
               <Graph
                 name="ocd"
@@ -526,7 +526,7 @@ const GraphContainer = props => {
           </div>
         </Grid>
         <Grid item xs={12} md={6} className={classes.gridRow}>
-          <SizeMe refreshRate={500} noPlaceholder>
+          <SizeMe refreshRate={16} noPlaceholder>
             {({ size }) => (
               <Graph
                 name="con"
@@ -537,6 +537,8 @@ const GraphContainer = props => {
                 nodeColors={conNodeColors}
                 edgeColors={conEdgeColors}
                 size={size}
+                shouldSetEdgeVisibility={props.shouldSetEdgeVisibility}
+                edgeWeightRange={props.edgeWeightRange}
               />
             )}
           </SizeMe>
@@ -553,8 +555,8 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
   console.log(prevProps, nextProps);
   let dontRerender =
     prevProps.graphId === nextProps.graphId &&
-    prevProps[0] === nextProps[0] &&
-    prevProps[1] === nextProps[1] &&
+    prevProps.edgeWeightRange[0] === nextProps.edgeWeightRange[0] &&
+    prevProps.edgeWeightRange[1] === nextProps.edgeWeightRange[1] &&
     ((prevProps.colorBy !== 'orbit_frequency' &&
       nextProps.colorBy === 'orbit_frequency') ||
       prevProps.colorBy === nextProps.colorBy) &&
