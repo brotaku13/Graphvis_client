@@ -624,6 +624,6 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
     prevProps.orbitId === nextProps.orbitId &&
     prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore &&
     prevProps.shouldShowEdges === nextProps.shouldShowEdges &&
-    prevProps.shouldShowEdgeWeights === nextProps.shouldShowEdgeWeights;
-  return dontRerender;
+    prevProps.shouldShowEdgeWeights === nextProps.shouldShowEdgeWeights
+  );
 });
