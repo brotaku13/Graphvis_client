@@ -123,7 +123,7 @@ const useStyles = makeStyles(theme => ({
   },
   colorScale: {
     position: 'absolute',
-    top: '5em',
+    top: '3em',
     width: '100%',
     zIndex: 500,
     left: '50%',
@@ -131,7 +131,7 @@ const useStyles = makeStyles(theme => ({
   },
   labelsForColorScale: {
     position: 'absolute',
-    top: '7em',
+    top: '5em',
     width: '100%',
     zIndex: 500,
     left: '50%',

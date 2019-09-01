@@ -444,6 +444,10 @@ const GraphContainer = props => {
     return [min, max];
   };
 
+  const colorByDegreeCentrality = () => {
+    
+  }
+
   const colorByDegree = () => {
     let scheme = COLOR_BY.DEGREE;
 
