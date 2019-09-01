@@ -4,10 +4,12 @@ import { useDebounce } from 'use-debounce';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
+import Checkbox from '@material-ui/core/Checkbox';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -204,29 +206,7 @@ const Visualization = props => {
   ] = useState(false);
 
   const [isWeighted, setIsWeighted] = useState(true);
-  // TODO: Depending on the current colorByState (use an ENUM with constants + switch statement imo),
-  // evaluate the min and max dynamically.
-  const getColoringMinMax = () => {
-    // Put graph functions here taht returns an array of 2
-    switch (colorByState) {
-      case COLOR_BY.DEFAULT:
-        return [-1];
-      case COLOR_BY.DEGREE:
-        return [20, 50];
-      case COLOR_BY.ORBIT_FREQUENCY:
-        return [20, 50];
-      case COLOR_BY.STRENGTH:
-        return [20, 50];
-      case COLOR_BY.DEGREE_CENTRALITY:
-        return [20, 50];
-      case COLOR_BY.ORBIT_CENTRALITY:
-        return [20, 50];
-      case COLOR_BY.BETWEEN_CENTRALITY:
-        return [20, 50];
-      default:
-        return [1, 100];
-    }
-  };
+
   const [colorScaleExtrema, setColorScaleExtrema] = useState([0, 100]);
 
   //slider logic
@@ -238,6 +218,7 @@ const Visualization = props => {
     edgeWeightRangeState,
     1000,
   );
+  const [shouldShowEdges, setShouldShowEdges] = useState(true);
   const [edgeWeightSliderDisabled, setEdgeWeightSliderDisabled] = useState(
     true,
   );
@@ -330,12 +311,23 @@ const Visualization = props => {
       <Divider />
       <List>
         <ListItem>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={shouldShowEdges}
+                onChange={() => setShouldShowEdges(!shouldShowEdges)}
+              />
+            }
+            label="Show Edges"
+          />
+        </ListItem>
+        <ListItem>
           <FormControl fullWidth>
             <Typography id="edge-weight-range" gutterBottom>
               Edge Weight
             </Typography>
             <Slider
-              disabled={edgeWeightSliderDisabled}
+              disabled={!shouldShowEdges || edgeWeightSliderDisabled}
               ValueLabelComponent={ValueLabelComponent}
               aria-labelledby="edge-weight-range"
               value={edgeWeightRangeState}
@@ -475,6 +467,7 @@ const Visualization = props => {
             selectedOrbitIdBefore={selectedOrbitFrequencyColorOnce}
             setGraphTitle={setGraphTitle}
             setGraphAuthor={setGraphAuthor}
+            shouldShowEdges={shouldShowEdges}
             shouldSetEdgeVisibility={!edgeWeightSliderDisabled}
             setEdgeWeightRange={setEdgeWeightRange}
             setColorScaleExtrema={setColorScaleExtrema}

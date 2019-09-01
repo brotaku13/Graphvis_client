@@ -33,10 +33,11 @@ const Graph = props => {
   console.log(props);
 
   const handleLinkVisibility = edge =>
-    props.shouldSetEdgeVisibility && props.edgeWeightRange
+    props.shouldShowEdges &&
+    (props.shouldSetEdgeVisibility && props.edgeWeightRange
       ? props.edgeWeightRange[0] <= edge.weight &&
         edge.weight <= props.edgeWeightRange[1]
-      : true;
+      : true);
 
   return (
     <ForceGraph3d
