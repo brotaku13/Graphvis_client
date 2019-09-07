@@ -231,7 +231,7 @@ const Visualization = props => {
   const [edgeWeightSliderDisabled, setEdgeWeightSliderDisabled] = useState(
     true,
   );
-  const [shouldShowEdgeWeights, setShouldShowEdgeWeights] = useState(false);
+  const [shouldShowEdgeWeights, setShouldShowEdgeWeights] = useState(true);
   const [sliderExtrema, setSliderExtrema] = useState({
     min: 0,
     max: Number.MAX_SAFE_INTEGER,
