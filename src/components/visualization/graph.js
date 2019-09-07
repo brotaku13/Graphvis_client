@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ForceGraph3d from 'react-force-graph-3d';
-import { COLOR_BY, COLOR_BY_LABELS } from '../../utils/Colors';
+import { COLOR_BY } from '../../utils/Colors';
 
 //use this for displaying data only.
 //any graph data manipulation should be done in the container class
@@ -8,7 +8,6 @@ const nodeSize = 0.15;
 const nodeResolution = 30;
 
 const Graph = props => {
-  console.log(props);
 
   let ref = null;
 
@@ -33,16 +32,12 @@ const Graph = props => {
   const getEdgeColor = edge => {
     return props.edgeColors[edge.colorIndex];
   };
-  const getEdgeWidth = edge => {
-    return 0;
-  };
 
   useEffect(() => {
     //component did mount
     props.setCamera(ref, props.name);
   }, [props, ref]);
 
-  console.log(props);
 
   const handleLinkVisibility = edge =>
     props.shouldShowEdges &&
@@ -68,7 +63,6 @@ const Graph = props => {
       enableNodeDrag={false}
       onNodeClick={node => props.onNodeClick(node)}
       linkColor={edge => getEdgeColor(edge)}
-      linkWidth={edge => getEdgeWidth(edge)}
       nodeOpacity={1}
       width={props.size.width}
       linkVisibility={handleLinkVisibility}
@@ -78,6 +72,5 @@ const Graph = props => {
 };
 
 export default React.memo(Graph, (prevProps, nextProps) => {
-  console.log(prevProps, nextProps);
   return prevProps.width !== nextProps.width;
 });

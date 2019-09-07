@@ -14,7 +14,6 @@ const formatResponse = data => {
 
 export const getGraph = async id => {
   if (id === 'explore') {
-    console.log(ExploreGraph);
     return formatResponse(ExploreGraph);
   }
   let local = window.localStorage;

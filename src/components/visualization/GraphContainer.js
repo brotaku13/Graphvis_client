@@ -306,13 +306,40 @@ const GraphContainer = forwardRef((props, ref) => {
     }
   };
 
+  const applyColorScheme = () => {
+    //this function constructs new arrays and sets them for each graph type based on the current color scheme
+    props.setColorScaleExtrema(colorSchemes.current[nodeColorScheme.current]);
+
+    let ocdColors = Array(ocdGraph.nodes.length);
+    ocdGraph.nodes.forEach(n => {
+      ocdColors[n.id] = n.selected
+        ? n.color[nodeColorScheme.current].selected
+        : n.color[nodeColorScheme.current].unselected;
+      if (!n.selected) {
+        console.log(n);
+      }
+    });
+
+    let conColors = Array(conGraph.nodes.length);
+    conGraph.nodes.forEach(n => {
+      conColors[n.id] = n.selected
+        ? n.color[nodeColorScheme.current].selected
+        : n.color[nodeColorScheme.current].unselected;
+      if (!n.selected) {
+        console.log(n);
+      }
+    });
+
+    setOcdNodeColors(ocdColors);
+    setConNodeColors(conColors);
+  };
+
   useEffect(() => {
     getGraph(props.graphId)
       .then(res => {
         if (res.status !== 200) {
           //set errors
         } else {
-          console.log(res);
           let [
             conGraphData,
             conNodeColors,
@@ -344,6 +371,7 @@ const GraphContainer = forwardRef((props, ref) => {
         setOcdGraph(buildGraphComponents([]));
         setIsLoading(false);
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.graphId]);
 
   useEffect(() => {
@@ -380,40 +408,17 @@ const GraphContainer = forwardRef((props, ref) => {
           case COLOR_BY.BETWEEN_CENTRALITY.value:
             extrema = colorByBetweennessCentrality();
             break;
+          default:
+            break;
         }
       }
       colorSchemes.current[scheme] = extrema;
       applyColorScheme();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props]);
 
-  const applyColorScheme = () => {
-    //this function constructs new arrays and sets them for each graph type based on the current color scheme
-    props.setColorScaleExtrema(colorSchemes.current[nodeColorScheme.current]);
-
-    let ocdColors = Array(ocdGraph.nodes.length);
-    ocdGraph.nodes.forEach(n => {
-      ocdColors[n.id] = n.selected
-        ? n.color[nodeColorScheme.current].selected
-        : n.color[nodeColorScheme.current].unselected;
-      if (!n.selected) {
-        console.log(n);
-      }
-    });
-
-    let conColors = Array(conGraph.nodes.length);
-    conGraph.nodes.forEach(n => {
-      conColors[n.id] = n.selected
-        ? n.color[nodeColorScheme.current].selected
-        : n.color[nodeColorScheme.current].unselected;
-      if (!n.selected) {
-        console.log(n);
-      }
-    });
-
-    setOcdNodeColors(ocdColors);
-    setConNodeColors(conColors);
-  };
+  
 
   const colorByOrbit = orbitId => {
     if (orbitId === undefined) {
