@@ -52,7 +52,7 @@ const Graph = props => {
       : true);
 
   const handleLinkWidth = edge =>
-    props.shouldShowEdgeWeights ? edge.weight : 1;
+    props.shouldShowEdgeWeights ? edge.weight * 0.2 : 1;
 
   return (
     <ForceGraph3d

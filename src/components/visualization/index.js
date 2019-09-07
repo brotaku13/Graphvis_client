@@ -191,8 +191,17 @@ const ColorScale = ({ className, labelClassName, min = 0, max = 100 }) => {
   );
 };
 
+const getGraphId = props => {
+  if (props.match.path === '/explore') {
+    return 'explore';
+  } else {
+    return props.match.params.id;
+  }
+};
+
 const Visualization = props => {
-  const graphId = props.match.params.id;
+  const graphId = getGraphId(props);
+
   const classes = useStyles();
   const [drawerState, setDrawerState] = useState(false);
   const [colorByState, setColorByState] = useState(COLOR_BY.DEFAULT.value);

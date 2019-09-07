@@ -105,9 +105,9 @@ const Home = props => {
     setGraphId(e.target.value);
   };
 
-  // const onExplore = () => {
-  //   //query server for random graph and then do the same as handleSubit
-  // };
+  const onExplore = () => {
+    props.history.push('/explore');
+  };
 
   return (
     <div className="graph-root" style={styles.root}>
@@ -157,7 +157,7 @@ const Home = props => {
                     <Button
                       color="primary"
                       style={styles.navButton}
-                      onClick={handleNewGraph}
+                      onClick={onExplore}
                     >
                       Explore
                     </Button>

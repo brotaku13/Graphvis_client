@@ -311,30 +311,35 @@ const GraphContainer = forwardRef((props, ref) => {
       .then(res => {
         if (res.status !== 200) {
           //set errors
+        } else {
+          console.log(res);
+          let [
+            conGraphData,
+            conNodeColors,
+            conEdgeColors,
+          ] = buildGraphComponents(res.data.graphs.con.nodes);
+          setConGraph(conGraphData);
+          setConNodeColors(conNodeColors);
+          setConEdgeColors(conEdgeColors);
+
+          let [
+            ocdGraphData,
+            ocdNodeColors,
+            ocdEdgeColors,
+          ] = buildGraphComponents(res.data.graphs.ocd.nodes);
+          setOcdGraph(ocdGraphData);
+          setOcdNodeColors(ocdNodeColors);
+          setOcdEdgeColors(ocdEdgeColors);
+
+          props.setGraphTitle((res.data && res.data.name) || '');
+          props.setGraphAuthor((res.data && res.data.author) || '');
+
+          props.setEdgeWeightRange(ocdGraphData.edges, conGraphData.edges);
         }
-
-        let [conGraphData, conNodeColors, conEdgeColors] = buildGraphComponents(
-          res.data.graphs.con.nodes,
-        );
-        setConGraph(conGraphData);
-        setConNodeColors(conNodeColors);
-        setConEdgeColors(conEdgeColors);
-
-        let [ocdGraphData, ocdNodeColors, ocdEdgeColors] = buildGraphComponents(
-          res.data.graphs.ocd.nodes,
-        );
-        setOcdGraph(ocdGraphData);
-        setOcdNodeColors(ocdNodeColors);
-        setOcdEdgeColors(ocdEdgeColors);
-
-        props.setGraphTitle((res.data && res.data.name) || '');
-        props.setGraphAuthor((res.data && res.data.author) || '');
-
-        props.setEdgeWeightRange(ocdGraphData.edges, conGraphData.edges);
-
         setIsLoading(false);
       })
       .catch(exception => {
+        console.log(exception);
         setConGraph(buildGraphComponents([]));
         setOcdGraph(buildGraphComponents([]));
         setIsLoading(false);
@@ -624,6 +629,6 @@ export default React.memo(GraphContainer, (prevProps, nextProps) => {
     prevProps.orbitId === nextProps.orbitId &&
     prevProps.selectedOrbitIdBefore === nextProps.selectedOrbitIdBefore &&
     prevProps.shouldShowEdges === nextProps.shouldShowEdges &&
-    prevProps.shouldShowEdgeWeights === nextProps.shouldShowEdgeWeights;
-  return dontRerender;
+    prevProps.shouldShowEdgeWeights === nextProps.shouldShowEdgeWeights
+  );
 });

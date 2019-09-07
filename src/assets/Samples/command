@@ -1,0 +1,1 @@
+mongo --quiet $1 --eval "printjson(db.$2.find().toArray())" > output.json

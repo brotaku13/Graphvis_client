@@ -1,12 +1,22 @@
 import axios from 'axios';
-
-//const API = 'http://5e441a4c.ngrok.io/api/';
+var ExploreGraph = require('../assets/Samples/ExploreGraph');
 const API = 'http://localhost:5415/api/';
 
 const GET_GRAPH = id => `graph/id/${id}`;
 const NEW_GRAPH = 'graph/new';
 
+const formatResponse = data => {
+  return {
+    status: 200,
+    data: data,
+  };
+};
+
 export const getGraph = async id => {
+  if (id === 'explore') {
+    console.log(ExploreGraph);
+    return formatResponse(ExploreGraph);
+  }
   let local = window.localStorage;
   let storedGraph = local.getItem(id);
   if (storedGraph !== null) {
@@ -19,11 +29,7 @@ export const getGraph = async id => {
       //if we can't parse localstorage item, try to retrieve a new one from localstorage
       return getAndCacheGraph(id);
     }
-
-    return {
-      status: 200,
-      data: graph,
-    };
+    return formatResponse(graph);
   } else {
     return getAndCacheGraph(id);
   }
