@@ -205,7 +205,7 @@ const Visualization = props => {
   const classes = useStyles();
   const [drawerState, setDrawerState] = useState(false);
   const [colorByState, setColorByState] = useState(COLOR_BY.DEFAULT.value);
-  const [orbitFrequencyState, setOrbitFrequencyState] = useState(0);
+  const [orbitFrequencyState, setOrbitFrequencyState] = useState(-1);
   const [finalOrbitFrequencyState, setFinalOrbitFrequencyState] = useState(0);
   const [graphTitle, setGraphTitle] = useState('');
   const [graphAuthor, setGraphAuthor] = useState('');
@@ -258,8 +258,10 @@ const Visualization = props => {
 
   const handleFinalOrbitFrequencyState = e => {
     e.preventDefault();
-    setFinalOrbitFrequencyState(orbitFrequencyState);
-    setSelectedOrbitFrequencyColorOnce(true);
+    if(orbitFrequencyState > -1 && orbitFrequencyState < 73){
+      setFinalOrbitFrequencyState(orbitFrequencyState);
+      setSelectedOrbitFrequencyColorOnce(true);
+    }
   };
 
   const handleEdgeWeightChange = (e, newValue) => {

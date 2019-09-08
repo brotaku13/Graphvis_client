@@ -11,7 +11,7 @@ export const COLOR_BY = {
   },
   ORBIT_FREQUENCY: {
     value: 'orbit_frequency',
-    label: 'Orbit Frequency',
+    label: 'Orbit Frequency (0 - 72)',
   },
   STRENGTH: {
     value: 'strength',
